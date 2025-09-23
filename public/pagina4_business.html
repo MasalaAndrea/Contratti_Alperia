@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore PDF Alperia - Pagamento e Consensi Business</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .section-box {
+            background: #f9fafd;
+            border: 2px solid #d1e4f6;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(30,80,140,0.07);
+            padding: 26px 20px 20px 20px;
+            margin-bottom: 28px;
+        }
+        .section-box h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #1c3664;
+        }
+        .error-border {
+            border: 3px solid rgb(255, 0, 0) !important;
+        }
+        @media (max-width: 700px) {
+            .section-box {
+                padding: 12px 6px 8px 6px;
+            }
+        }
+        /* Allinea input a sx e testo a dx per questa pagina */
+        .checkbox-group, .radio-group, .dichiarazioni-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .checkbox-group label,
+        .radio-group label,
+        .dichiarazioni-group label {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 13px;
+            font-size: 1.07em;
+            cursor: pointer;
+            width: 100%;
+            justify-content: flex-start;
+        }
+        .checkbox-group input[type="checkbox"],
+        .radio-group input[type="radio"],
+        .dichiarazioni-group input[type="checkbox"],
+        .dichiarazioni-group input[type="radio"] {
+            accent-color: #234567;
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+            min-height: 18px;
+            margin-right: 0;
+            margin-left: 0;
+            box-shadow: none;
+            border: 1px solid #b0c6e2;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="business">
+    <div class="container">
+        <h1>Contratto Business</h1>
+        <h2>Pagina 3 di 3: Pagamento e Consensi Business</h2>
+
+        <form id="paymentForm">
+            <!-- SDD -->
+            <div class="form-section section-box">
+                <h3>Autorizzazione Addebito Diretto (SDD)</h3>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="autorizzazione_sdd" name="autorizzazione_sdd">
+                            Autorizzazione addebito diretto in conto corrente
+                        </label>
+                    </div>
+                </div>
+
+                <div id="sezione-sdd" style="display: none;">
+                    <div class="form-group">
+                        <label for="cognome_nome">Cognome e Nome debitore:*</label>
+                        <input type="text" id="cognome_nome" name="cognome_nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="indirizzo_debitore">Indirizzo debitore:*</label>
+                        <input type="text" id="indirizzo_debitore" name="indirizzo_debitore">
+                    </div>
+                    <div class="form-group">
+                        <label for="cf_debitore">Partiva Iva/Codice Fiscale debitore:*</label>
+                        <input type="text" id="cf_debitore" name="cf_debitore" maxlength="16" minlength="11">
+                        <div id="cf_debitore-error" class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="iban">IBAN:*</label>
+                        <input type="text" id="iban" name="iban" maxlength="27" minlength="27">
+                        <div id="iban-error" class="error-message"></div>
+                    </div>
+               </div>
+            </div>
+            <!-- Consensi -->
+            <div class="form-section section-box">
+                <h3>Consensi</h3>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="consenso_obbligatorio" name="consenso_obbligatorio" checked disabled>
+                            Presa visione dell’Informativa sulla Privacy e rilascio del consenso al trattamento dei dati personali per le finalità legate all’erogazione del servizio.
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="consenso_promozione" name="consenso_promozione">
+                            Consenso al trattamento dei dati personali per finalità di promozione e marketing
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="consenso_profilazione" name="consenso_profilazione">
+                            Consenso al trattamento dei dati personali per finalità di profilazione
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="consenso_terzi" name="consenso_terzi">
+                            Consenso alla comunicazione dei dati personali a terzi per le medesime finalità di cui ai punti precedenti.
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- Dichiarazioni -->
+            <div class="form-section section-box">
+                <h3>Dichiarazioni</h3>
+                <div class="form-group">
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" id="proprietario" name="dichiarazione_notorieta" value="Proprietario">
+                            Dichiara di essere il proprietario dell’immobile
+                        </label>
+                        <label>
+                            <input type="radio" id="affitto" name="dichiarazione_notorieta" value="Affitto">
+                            Dichiara di essere in affitto/locazione
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- Documento Identità -->
+            <div class="form-section section-box">
+                <h3>Documento d'Identità</h3>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="carta_identita" name="documento_identita" value="Carta d'identità">
+                            Carta d'identità
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="patente" name="documento_identita" value="Patente">
+                            Patente
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="passaporto" name="documento_identita" value="Passaporto">
+                            Passaporto
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- Firma e Data -->
+            <div class="form-section">
+                <h1>Data e Firma</h1>
+                <div class="form-group">
+                    <label for="data_firma">Data:*</label>
+                    <input type="date" id="data_firma" name="data_firma" required>
+                </div>
+                <div class="form-group">
+                    <label>Firma:*</label>
+                    <canvas id="firma-pad" width="345" height="250" style="border: 3px solid rgb(255, 0, 0);"></canvas>
+                    <div class="text-center">
+                        <button type="button" id="clear-firma">Cancella Firma</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button type="button" onclick="window.history.back()">Indietro</button>
+                <button type="submit">Avanti</button>
+            </div>
+        </form>
+    </div>
+    <footer class="main-footer">
+        © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#">Contatti</a>
+    </footer>
+
+    <script>
+    // SDD gestione visibilità e required dinamico
+    document.addEventListener('DOMContentLoaded', function() {
+        const sddCheckbox = document.getElementById('autorizzazione_sdd');
+        const sddSection = document.getElementById('sezione-sdd');
+        const cf_debitore = document.getElementById('cf_debitore');
+        const iban = document.getElementById('iban');
+
+        function aggiornaRequiredSDD() {
+            if (sddCheckbox.checked) {
+                sddSection.style.display = 'block';
+                cf_debitore.setAttribute('required', 'required');
+                iban.setAttribute('required', 'required');
+            } else {
+                sddSection.style.display = 'none';
+                cf_debitore.removeAttribute('required');
+                iban.removeAttribute('required');
+            }
+        }
+        sddCheckbox.addEventListener('change', aggiornaRequiredSDD);
+        aggiornaRequiredSDD();
+    });
+    </script>
+    <script>
+    // FirmaPad minimale (funziona sia desktop che mobile)
+    document.addEventListener('DOMContentLoaded', function() {
+        const canvas = document.getElementById('firma-pad');
+        const ctx = canvas.getContext('2d');
+        let drawing = false, lastX = 0, lastY = 0;
+
+        function startDraw(e) {
+            drawing = true;
+            const rect = canvas.getBoundingClientRect();
+            lastX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            lastY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+        }
+        function draw(e) {
+            if (!drawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.strokeStyle = "#222";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            lastX = x; lastY = y;
+        }
+        function endDraw() { drawing = false; }
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', endDraw);
+        canvas.addEventListener('mouseleave', endDraw);
+
+        canvas.addEventListener('touchstart', startDraw);
+        canvas.addEventListener('touchmove', function(e){ draw(e); e.preventDefault(); }, {passive: false});
+        canvas.addEventListener('touchend', endDraw);
+
+        document.getElementById('clear-firma').addEventListener('click', function() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+    });
+    </script>
+    <script>
+    // Validazione e submit
+    document.addEventListener('DOMContentLoaded', function() {
+        const paymentForm = document.getElementById('paymentForm');
+        const canvas = document.getElementById('firma-pad');
+
+        function isCanvasBlank(canvas) {
+            const blank = document.createElement('canvas');
+            blank.width = canvas.width;
+            blank.height = canvas.height;
+            return canvas.toDataURL() === blank.toDataURL();
+        }
+
+        if (paymentForm) {
+            paymentForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                let valid = true;
+
+                // SDD
+                const sddCheckbox = document.getElementById('autorizzazione_sdd');
+                let sdd_dati = {};
+                if (sddCheckbox && sddCheckbox.checked) {
+                    sdd_dati = {
+                        cognome_nome: document.getElementById('cognome_nome').value,
+                        indirizzo_debitore: document.getElementById('indirizzo_debitore').value,
+                        cf_debitore: document.getElementById('cf_debitore').value,
+                        iban: document.getElementById('iban').value
+                    };
+                    if (!sdd_dati.cognome_nome || !sdd_dati.indirizzo_debitore || !sdd_dati.cf_debitore || !sdd_dati.iban) {
+                        valid = false;
+                        alert('Compila tutti i dati dell\'addebito diretto.');
+                    }
+                }
+
+                // Consensi
+                const consenso_obbligatorio = document.getElementById('consenso_obbligatorio').checked;
+                const consensi_commerciali = {
+                    promozione: document.getElementById('consenso_promozione').checked,
+                    profilazione: document.getElementById('consenso_profilazione').checked,
+                    terzi: document.getElementById('consenso_terzi').checked
+                };
+
+                // Dichiarazioni
+                let dichiarazione_notorieta = '';
+                const dichiarazioneRadio = document.querySelector('input[name="dichiarazione_notorieta"]:checked');
+                if (dichiarazioneRadio) dichiarazione_notorieta = dichiarazioneRadio.value;
+
+                // Documento identità
+                const documento_identita = Array.from(document.querySelectorAll('input[name="documento_identita"]:checked')).map(cb => cb.value);
+
+                // Data firma
+                const data_firma = document.getElementById('data_firma').value;
+
+                // Firma
+                let firma = '';
+                if (canvas && canvas.toDataURL) { firma = canvas.toDataURL(); }
+
+                // Validazione
+                if (!data_firma) {
+                    valid = false;
+                    alert('Inserisci la data.');
+                }
+                if (documento_identita.length === 0) {
+                    valid = false;
+                    alert('Seleziona almeno un documento di identità.');
+                }
+                if (!dichiarazione_notorieta) {
+                    valid = false;
+                    alert('Seleziona una dichiarazione.');
+                }
+                if (isCanvasBlank(canvas)) {
+                    valid = false;
+                    alert('Devi apporre la firma per proseguire!');
+                    canvas.classList.add('error-border');
+                } else {
+                    canvas.classList.remove('error-border');
+                }
+
+                if (valid) {
+                    const paymentData = {
+                        autorizzazione_sdd: sddCheckbox.checked,
+                        sdd_dati,
+                        consenso_obbligatorio,
+                        consensi_commerciali,
+                        dichiarazione_notorieta,
+                        documento_identita,
+                        data_firma,
+                        firma
+                    };
+                    sessionStorage.setItem('paymentData', JSON.stringify(paymentData));
+                    window.location.href = 'riepilogo_business.html';
+                }
+            });
+        }
+    });
+    </script>
+    <script src="script_business.js"></script>
+</body>
+</html>

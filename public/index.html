@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contratto Alperia - Inizio</title>
+    <link rel="stylesheet" href="style.css">
+        <!-- Icone e manifest PWA -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+</head>
+<body>
+    <header class="main-header">
+    <div class="header-content">
+        <img src="logo-menergy.png" alt="M-Energy Logo" class="logo logo-sinistra">
+        <img src="logo-alperia.png" alt="Alperia Logo" class="logo logo-destra">
+    </div>
+</header>
+    <div class="container">
+        <h1>Contratto Alperia</h1>
+        <p class="subtitle">Compila il contratto in modo semplice e veloce.<br>
+        Scegli il tipo di contratto e le opzioni, poi procedi.</p>
+        <div class="main-card">
+            <form id="startForm">
+                <!-- Tipo di contratto -->
+                <section class="section-contratto">
+                    <h2>Tipo di contratto</h2>
+                    <div class="vertical-radio-group">
+                        <label class="checkbox-inline">
+                            <input type="radio" name="tipo_contratto" id="contratto_residenziale" value="residenziale" checked>
+                            Residenziale
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="radio" name="tipo_contratto" id="contratto_business" value="business">
+                            Business
+                        </label>
+                    </div>
+                </section>
+                <!-- Opzioni contratto -->
+                <section class="section-opzioni">
+                    <h2>
+                        Opzioni
+                        <span class="settings-icon" id="open-options-modal">&#9881;</span>
+                    </h2>
+                    <div id="selected-options-list"></div>
+                </section>
+                <!-- Email -->
+                <section class="section-email">
+                    <h2>
+                        E-mail
+                        <span class="settings-icon" id="open-email-modal">&#9881;</span>
+                    </h2>
+                    <div class="form-group">
+                        <label for="mail_collaboratore">Email collaboratore:</label>
+                        <input type="email" id="mail_collaboratore" name="mail_collaboratore">
+                    </div>
+                    <div class="form-group">
+                        <label for="mail_cliente">Email cliente (CC, opzionale):</label>
+                        <input type="email" id="mail_cliente" name="mail_cliente">
+                    </div>
+                </section>
+                <!-- Pulsante avanti -->
+                <button type="submit" class="main-btn">Avanti</button>
+                <!-- Azioni bozze -->
+                <div class="bozze-actions">
+                    <label>
+                        <input type="checkbox" id="riprendi-bozza"> Riprendi una compilazione salvata
+                    </label>
+                    <div id="bozza-select-container" style="display:none; margin-top:8px;">
+                        <select id="bozza-select">
+                            <option value="">-- Seleziona una bozza --</option>
+                        </select>
+                        <span id="no-bozze-msg" style="display:none;color:#888;">Nessuna bozza salvata.</span>
+                    </div>
+                    <button type="button" onclick="mostraFormEliminaBozze()" class="bozza-btn">Elimina bozze salvate</button>
+                    <div id="elimina-bozze-container"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <footer class="main-footer">
+        © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#">Contatti</a>
+    </footer>
+    <!-- MODAL EMAIL -->
+    <div id="email-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <span class="close-modal" id="close-email-modal">&times;</span>
+            <h3>Impostazioni Email</h3>
+            <form id="emailSettingsForm">
+                <div class="form-group">
+                    <label for="mail_collaboratore_modal">Email collaboratore <span style="color:red;">*</span>:</label>
+                    <input type="email" id="mail_collaboratore_modal" name="mail_collaboratore_modal" required>
+                </div>
+                <div class="form-group">
+                    <label for="mail_cliente_modal">Email cliente (CC, opzionale):</label>
+                    <input type="email" id="mail_cliente_modal" name="mail_cliente_modal">
+                </div>
+                <button type="submit" style="width:100%;background:#1c3664;color:#fff;font-size:1.1rem;">Salva</button>
+            </form>
+        </div>
+    </div>
+    <!-- MODAL OPZIONI CONTRATTO -->
+    <div id="options-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <span class="close-modal" id="close-options-modal">&times;</span>
+            <h3>Opzioni Contratto</h3>
+            <form id="optionsSettingsForm">
+                <div class="opzioni-group">
+                    <label><input type="checkbox" name="opzioni_contratto" value="subentro_ee_res"> Subentro EE Res</label>
+                    <label><input type="checkbox" name="opzioni_contratto" value="subentro_gas_res"> Subentro GAS Res</label>
+                    <label><input type="checkbox" name="opzioni_contratto" value="subentro_ee_bus"> Subentro EE Bus</label>
+                    <label><input type="checkbox" name="opzioni_contratto" value="subentro_gas_bus"> Subentro GAS Bus</label>
+                    <label><input type="checkbox" name="opzioni_contratto" value="voltura_ee_res"> Voltura EE Res</label>
+                    <label><input type="checkbox" name="opzioni_contratto" value="voltura_gas_res"> Voltura GAS Res</label>
+                    <label><input type="checkbox" name="opzioni_contratto" value="voltura_ee_bus"> Voltura EE Bus</label>
+                    <label><input type="checkbox" name="opzioni_contratto" value="voltura_gas_bus"> Voltura GAS Bus</label>
+                </div>
+                <button type="button" id="save-options-btn" style="width:100%;background:#1c3664;color:#fff;font-size:1.1rem;">Salva</button>
+            </form>
+        </div>
+    </div>
+    <script>
+    // Riprendi bozza
+    document.getElementById('riprendi-bozza').addEventListener('change', function(e) {
+        const selectContainer = document.getElementById('bozza-select-container');
+        const bozzaSelect = document.getElementById('bozza-select');
+        const noBozzeMsg = document.getElementById('no-bozze-msg');
+        if (e.target.checked) {
+            bozzaSelect.innerHTML = '<option value="">-- Seleziona una bozza --</option>';
+            let found = false;
+            Object.keys(localStorage).forEach(function(key) {
+                if (key.startsWith('bozza_') && key !== 'bozza_selezionata') {
+                    found = true;
+                    const nomeBozza = key.replace('bozza_', '');
+                    const option = document.createElement('option');
+                    option.value = nomeBozza;
+                    option.textContent = nomeBozza;
+                    if (localStorage.getItem('bozza_selezionata') === nomeBozza) {
+                        option.selected = true;
+                    }
+                    bozzaSelect.appendChild(option);
+                }
+            });
+            selectContainer.style.display = 'block';
+            noBozzeMsg.style.display = found ? 'none' : 'inline';
+            bozzaSelect.style.display = found ? 'inline' : 'none';
+        } else {
+            selectContainer.style.display = 'none';
+            localStorage.removeItem('bozza_selezionata');
+        }
+    });
+    document.getElementById('bozza-select').addEventListener('change', function(e) {
+        const nomeBozza = e.target.value;
+        if (nomeBozza) {
+            localStorage.setItem('bozza_selezionata', nomeBozza);
+        } else {
+            localStorage.removeItem('bozza_selezionata');
+        }
+    });
+
+    // MODAL EMAIL SETTINGS
+    document.getElementById('open-email-modal').onclick = function() {
+        document.getElementById('email-modal').style.display = 'flex';
+        document.getElementById('mail_collaboratore_modal').value = localStorage.getItem('mail_collaboratore') || '';
+        document.getElementById('mail_cliente_modal').value = localStorage.getItem('mail_cliente_temp') || '';
+    };
+    document.getElementById('close-email-modal').onclick = function() {
+        document.getElementById('email-modal').style.display = 'none';
+    };
+    document.getElementById('emailSettingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const mailCollaboratore = document.getElementById('mail_collaboratore_modal').value.trim();
+        const mailCliente = document.getElementById('mail_cliente_modal').value.trim();
+        if (!mailCollaboratore) {
+            alert('Inserisci la tua email collaboratore!');
+            return;
+        }
+        localStorage.setItem('mail_collaboratore', mailCollaboratore);
+        localStorage.setItem('mail_cliente_temp', mailCliente);
+        document.getElementById('email-modal').style.display = 'none';
+
+        // Aggiorna anche gli input nel form principale
+        const mailInput = document.getElementById('mail_collaboratore');
+        if (mailInput) mailInput.value = mailCollaboratore;
+        const mailClienteInput = document.getElementById('mail_cliente');
+        if (mailClienteInput) mailClienteInput.value = mailCliente;
+    });
+
+    // OPZIONI MODAL SETTINGS
+    function renderSelectedOptions() {
+        const selectedOptions = JSON.parse(localStorage.getItem('selected_opzioni_contratto') || '[]');
+        const list = document.getElementById('selected-options-list');
+        list.innerHTML = "";
+        if(selectedOptions.length > 0) {
+            selectedOptions.forEach(opt => {
+                const div = document.createElement("div");
+                div.className = "selected-option-pill";
+                div.textContent = {
+                    "subentro_ee_res": "Subentro EE Res",
+                    "subentro_gas_res": "Subentro GAS Res",
+                    "subentro_ee_bus": "Subentro EE Bus",
+                    "subentro_gas_bus": "Subentro GAS Bus",
+                    "voltura_ee_res": "Voltura EE Res",
+                    "voltura_gas_res": "Voltura GAS Res",
+                    "voltura_ee_bus": "Voltura EE Bus",
+                    "voltura_gas_bus": "Voltura GAS Bus"
+                }[opt] || opt;
+                list.appendChild(div);
+            });
+        }
+    }
+    document.getElementById('open-options-modal').onclick = function() {
+        document.getElementById('options-modal').style.display = 'flex';
+        // Precompila le opzioni selezionate
+        const selectedOptions = JSON.parse(localStorage.getItem('selected_opzioni_contratto') || '[]');
+        document.querySelectorAll('#options-modal input[type="checkbox"]').forEach(cb => {
+            cb.checked = selectedOptions.includes(cb.value);
+        });
+    };
+    document.getElementById('close-options-modal').onclick = function() {
+        document.getElementById('options-modal').style.display = 'none';
+    };
+    document.getElementById('save-options-btn').onclick = function() {
+        // Salva le opzioni selezionate
+        const selected = [];
+        document.querySelectorAll('#options-modal input[type="checkbox"]:checked').forEach(cb => {
+            selected.push(cb.value);
+        });
+        localStorage.setItem('selected_opzioni_contratto', JSON.stringify(selected));
+        document.getElementById('options-modal').style.display = 'none';
+        renderSelectedOptions();
+    };
+
+    // Precompila email nascosti all'avvio
+    document.addEventListener('DOMContentLoaded', function() {
+        const mailInput = document.getElementById('mail_collaboratore');
+        if (mailInput) {
+            mailInput.value = localStorage.getItem('mail_collaboratore') || '';
+        }
+        const mailClienteInput = document.getElementById('mail_cliente');
+        if (mailClienteInput) {
+            mailClienteInput.value = localStorage.getItem('mail_cliente_temp') || '';
+        }
+        renderSelectedOptions();
+    });
+
+    // Submit form: carica la bozza selezionata se presente!
+    document.getElementById('startForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const tipoContratto = document.querySelector('input[name="tipo_contratto"]:checked').value;
+        const mailCollaboratore = document.getElementById('mail_collaboratore').value.trim();
+        const mailCliente = document.getElementById('mail_cliente').value.trim();
+        const selectedOptions = JSON.parse(localStorage.getItem('selected_opzioni_contratto') || '[]');
+
+        localStorage.setItem('tipo_contratto', tipoContratto);
+        localStorage.setItem('mail_collaboratore', mailCollaboratore);
+        localStorage.setItem('mail_cliente', mailCliente);
+
+        const bozzaSelezionata = localStorage.getItem('bozza_selezionata');
+        if (document.getElementById('riprendi-bozza').checked && bozzaSelezionata) {
+            const datiBozza = JSON.parse(localStorage.getItem('bozza_' + bozzaSelezionata));
+            if (tipoContratto === "business" && datiBozza && datiBozza.aziendaData && datiBozza.technicalData) {
+                sessionStorage.setItem('aziendaData', JSON.stringify(datiBozza.aziendaData));
+                sessionStorage.setItem('technicalData', JSON.stringify(datiBozza.technicalData));
+                window.location.href = "pagina4_business.html";
+                return;
+            }
+            if (tipoContratto === "residenziale" && datiBozza && datiBozza.customerData && datiBozza.technicalData) {
+                sessionStorage.setItem('customerData', JSON.stringify(datiBozza.customerData));
+                sessionStorage.setItem('technicalData', JSON.stringify(datiBozza.technicalData));
+                window.location.href = "pagina3.html";
+                return;
+            }
+        }
+        if (tipoContratto === "residenziale") {
+            window.location.href = "pagina1.html";
+        } else {
+            window.location.href = "pagina2_business.html";
+        }
+    });
+    </script>
+    <script src="elimina_bozze.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

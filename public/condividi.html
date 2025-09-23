@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Condividi PDF</title>
+  <style>
+    body { font-family: sans-serif; margin: 40px; }
+    #condividi-btn { font-size: 1.2em; padding: 0.5em 1em; }
+    #info { margin-top: 2em; color: #555; }
+  </style>
+</head>
+<body>
+  <h1>Condividi il tuo PDF</h1>
+  <input type="file" id="pdf-input" accept="application/pdf">
+  <button id="condividi-btn" disabled>Condividi PDF</button>
+  <div id="info"></div>
+
+  <script>
+    const pdfInput = document.getElementById('pdf-input');
+    const condividiBtn = document.getElementById('condividi-btn');
+    const info = document.getElementById('info');
+    let pdfFile = null;
+
+    pdfInput.addEventListener('change', function() {
+      if (pdfInput.files.length > 0) {
+        pdfFile = pdfInput.files[0];
+        condividiBtn.disabled = false;
+        info.textContent = "PDF caricato: " + pdfFile.name;
+      } else {
+        pdfFile = null;
+        condividiBtn.disabled = true;
+        info.textContent = "";
+      }
+    });
+
+    condividiBtn.addEventListener('click', async function() {
+      if (!pdfFile) return alert("Carica prima un PDF!");
+
+      // Controlla compatibilità API
+      if (!navigator.canShare || !navigator.canShare({ files: [pdfFile] })) {
+        alert("La condivisione file non è supportata dal browser!");
+        return;
+      }
+
+      try {
+        await navigator.share({
+          title: "Contratto PDF",
+          text: "Ecco il contratto PDF che hai appena creato.",
+          files: [pdfFile]
+        });
+        info.textContent = "PDF condiviso con successo!";
+      } catch (err) {
+        info.textContent = "Condivisione annullata o errore: " + err;
+      }
+    });
+  </script>
+</body>
+</html>

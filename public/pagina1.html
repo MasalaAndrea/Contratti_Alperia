@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore PDF Alperia - Dati Cliente</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="residenziale">
+    <header class="main-header">
+        <div class="header-content">
+            <img src="logo-menergy.png" alt="M-Energy Logo" class="logo logo-sinistra">
+            <img src="logo-alperia.png" alt="Alperia Logo" class="logo logo-destra">
+        </div>
+    </header>
+    <div class="card-centrale">
+        <h1 class="titolo-contratto">Contratto Residenziale</h1>
+        <div class="sottotitolo"><b>Pagina 1 di 3:</b> Dati Cliente</div>
+        <form id="customerForm">
+            <div class="form-section">
+                <h3>Dati del Cliente</h3>
+                <div class="form-group-doppio">
+                    <div class="form-group">
+                        <label for="cognome">Cognome:*</label>
+                        <input type="text" id="cognome" name="cognome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nome">Nome:*</label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cf">Codice Fiscale:*</label>
+                    <input type="text" id="cf" name="cf" required maxlength="16" minlength="16">
+                    <div id="cf-error" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="indirizzo_residenza">Indirizzo di residenza:*</label>
+                    <input type="text" id="indirizzo_residenza" name="indirizzo_residenza" required>
+                </div>
+                <div class="form-group-doppio">
+                    <div class="form-group">
+                        <label for="n_residenza">N:*</label>
+                        <input type="text" id="n_residenza" name="n_residenza" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cap_residenza">CAP:*</label>
+                        <input type="text" id="cap_residenza" required maxlength="5" minlength="5">
+                        <div id="cap_residenza-error" class="error-message"></div>
+                    </div>
+                </div>
+                <div class="form-group-doppio">
+                    <div class="form-group">
+                        <label for="comune_residenza">Comune:*</label>
+                        <input type="text" id="comune_residenza" name="comune_residenza" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="provincia_residenza">Provincia:*</label>
+                        <input type="text" id="provincia_residenza" name="provincia_residenza" required maxlength="2" minlength="2">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cellulare">Cellulare:*</label>
+                    <input type="tel" id="cellulare" name="cellulare" required>
+                </div>
+                <div class="form-group">
+                    <label for="mail">E-mail:*</label>
+                    <input type="email" id="mail" name="mail" required>
+                </div>
+            </div>
+            <div class="form-section">
+                <h3>Dati di Fornitura</h3>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="fornitura_diversa" name="fornitura_diversa">
+                    <label for="fornitura_diversa">Indirizzo di fornitura diverso dalla residenza</label>
+                </div>
+                <div id="dati-fornitura" style="display: none;">
+                    <div class="form-group">
+                        <label for="indirizzo_fornitura">Indirizzo:*</label>
+                        <input type="text" id="indirizzo_fornitura" name="indirizzo_fornitura" class="fornitura-obbligatoria">
+                    </div>
+                    <div class="form-group-doppio">
+                        <div class="form-group">
+                            <label for="n_fornitura">N:*</label>
+                            <input type="text" id="n_fornitura" name="n_fornitura" class="fornitura-obbligatoria">
+                        </div>
+                        <div class="form-group">
+                            <label for="cap_fornitura">CAP:*</label>
+                            <input type="text" id="cap_fornitura" name="cap_fornitura" class="fornitura-obbligatoria" required maxlength="5" minlength="5">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="comune_fornitura">Comune:*</label>
+                        <input type="text" id="comune_fornitura" name="comune_fornitura" class="fornitura-obbligatoria">
+                    </div>
+                    <div class="form-group">
+                        <label for="provincia_fornitura">Provincia:*</label>
+                        <input type="text" id="provincia_fornitura" name="provincia_fornitura" class="fornitura-obbligatoria" required maxlength="2" minlength="2">
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-buttons" style="text-align:right;">
+                <button type="submit" class="main-btn">Avanti</button>
+            </div>
+        </form>
+    </div>
+    <footer class="main-footer">
+        © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#">Contatti</a>
+    </footer>
+    <script>
+    document.getElementById('fornitura_diversa').addEventListener('change', function(e) {
+        document.getElementById('dati-fornitura').style.display = e.target.checked ? 'block' : 'none';
+    });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

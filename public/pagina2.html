@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore PDF Alperia - Dati Tecnici</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="residenziale">
+    <header class="main-header">
+        <div class="header-content">
+            <img src="logo-menergy.png" alt="M-Energy Logo" class="logo logo-sinistra">
+            <img src="logo-alperia.png" alt="Alperia Logo" class="logo logo-destra">
+        </div>
+    </header>
+    <div class="card-centrale">
+        <h1 class="titolo-contratto">Contratto Residenziale</h1>
+        <div class="sottotitolo"><b>Pagina 2 di 3:</b> Dati Tecnici di Fornitura</div>
+        <form id="technicalForm">
+            <div class="form-section">
+                <div class="form-group-doppio">
+                    <label class="checkbox-inline" style="flex:1;">
+                        <input type="checkbox" id="richiesta_elettrica" name="richiesta_elettrica">
+                         ENERGIA ELETTRICA
+                    </label>
+                    <label class="checkbox-inline" style="flex:1;">
+                        <input type="checkbox" id="richiesta_gas" name="richiesta_gas">
+                         GAS NATURALE
+                    </label>
+                </div>
+            </div>
+            <div id="sezione-elettrica" style="display: none;">
+                <h3>Dati Energia Elettrica</h3>
+                <div class="form-group">
+                    <label>Tipo Richiesta:*</label>
+                    <div class="radio-row">
+                        <label class="checkbox-inline"><input type="radio" name="tipo_richiesta_elettrica" value="switch" class="energia-obbligatoria">Switch</label>
+                        <label class="checkbox-inline"><input type="radio" name="tipo_richiesta_elettrica" value="subentro" class="energia-obbligatoria">Subentro</label>
+                        <label class="checkbox-inline"><input type="radio" name="tipo_richiesta_elettrica" value="voltura" class="energia-obbligatoria">Voltura</label>
+                        <label class="checkbox-inline"><input type="radio" name="tipo_richiesta_elettrica" value="nuova_attivazione" class="energia-obbligatoria">Nuova Attivazione</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="data_attivazione_ee">Data di Attivazione:</label>
+                    <input type="date" id="data_attivazione_ee" name="data_attivazione_ee">
+                </div>
+                <div class="form-group-doppio">
+                    <div class="form-group">
+                        <label>Codice POD:*</label>
+                        <div class="pod-input-group">
+                            <span class="pod-prefix">IT</span>
+                            <input type="text" id="codice_pod_1" maxlength="3" class="pod-small energia-obbligatoria">
+                            <span class="pod-prefix">E</span>
+                            <input type="text" id="codice_pod_2" maxlength="8" class="pod-large energia-obbligatoria">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="fornitore_uscente_ee">Fornitore Uscente:*</label>
+                        <input type="text" id="fornitore_uscente_ee" name="fornitore_uscente_ee" class="energia-obbligatoria">
+                    </div>
+                </div>
+                <div class="form-group-doppio">
+                    <div class="form-group">
+                       <label for="consumo_annuo_kwh">Consumo annuo (kWh):*</label>
+                     <input type="number" id="consumo_annuo_kwh" name="consumo_annuo_kwh" placeholder="Es. 3200" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="potenza_impegnata_kw">Potenza Impegnata (kW):*</label>
+                        <input type="number" id="potenza_impegnata_kw" name="potenza_impegnata_kw" class="energia-obbligatoria" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tipologia di Uso:*</label>
+                    <div class="domestico-row">
+                        <label class="checkbox-inline"><input type="radio" name="tipologia_uso" value="domestico_residente" class="energia-obbligatoria">Domestico Residente</label>
+                        <label class="checkbox-inline"><input type="radio" name="tipologia_uso" value="domestico_non_residente" class="energia-obbligatoria">Domestico Non Residente</label>
+                        <label class="checkbox-inline"><input type="radio" name="tipologia_uso" value="altri_usi" class="energia-obbligatoria">Altri usi</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nome_offerta_ee">Nome Offerta sottoscritta:*</label>
+                    <div style="display: flex; gap: 8px;">
+                        <select id="nome_offerta_ee" name="nome_offerta_ee" class="select-full energia-obbligatoria">
+                            <option value="" disabled selected>Caricamento offerte...</option>
+                        </select>
+                        <button type="button" id="aggiornaCteEE" class="aggiorna-cte-btn" title="Aggiorna offerte Energia Residenziale">Aggiorna CTE</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="codice_offerta_ee">Codice offerta:</label>
+                    <span id="codice_offerta_ee" class="read-only"></span>
+                    <input type="hidden" id="hidden_codice_offerta_ee" name="hidden_codice_offerta_ee">
+                </div>
+            </div>
+            <div id="sezione-gas" style="display: none;">
+                <h3>Dati Gas Naturale</h3>
+                <div class="form-group">
+                    <label>Tipo Richiesta:*</label>
+                    <div class="radio-row">
+                        <label class="checkbox-inline"><input type="radio" name="tipo_richiesta_gas" value="switch" class="gas-obbligatoria">Switch</label>
+                        <label class="checkbox-inline"><input type="radio" name="tipo_richiesta_gas" value="subentro" class="gas-obbligatoria">Subentro</label>
+                        <label class="checkbox-inline"><input type="radio" name="tipo_richiesta_gas" value="voltura" class="gas-obbligatoria">Voltura</label>
+                        <label class="checkbox-inline"><input type="radio" name="tipo_richiesta_gas" value="nuova_attivazione" class="gas-obbligatoria">Nuova Attivazione</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="data_attivazione_gas">Data di Attivazione:</label>
+                    <input type="date" id="data_attivazione_gas" name="data_attivazione_gas">
+                </div>
+                <div class="form-group-doppio">
+                    <div class="form-group">
+                        <label for="codice_pdr">Codice PDR:*</label>
+                        <input type="text" id="codice_pdr" name="codice_pdr" maxlength="14" class="gas-obbligatoria" placeholder="12345678912345">
+                    </div>
+                    <div class="form-group">
+                        <label for="fornitore_uscente_gas">Fornitore Uscente:*</label>
+                        <input type="text" id="fornitore_uscente_gas" name="fornitore_uscente_gas" class="gas-obbligatoria">
+                    </div>
+                </div>
+                <div class="form-group-doppio">
+                    <div class="form-group">
+                        <label for="consumo_annuo_smc">Consumo Annuo (smc):*</label>
+                        <input type="number" id="consumo_annuo_smc" name="consumo_annuo_smc" class="gas-obbligatoria" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="remi">REMI* (8 caratteri):</label>
+                        <input type="text" id="remi" name="remi" maxlength="8" class="gas-obbligatoria" placeholder="REMI1234">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Categoria d'Uso:*</label>
+                    <div class="riscaldamento-row">
+                        <label class="checkbox-inline"><input type="checkbox" id="riscaldamento" name="categoria_uso_gas" value="riscaldamento">Riscaldamento</label>
+                        <label class="checkbox-inline"><input type="checkbox" id="cottura_cibi" name="categoria_uso_gas" value="cottura_cibi">Cottura cibi</label>
+                        <label class="checkbox-inline"><input type="checkbox" id="produzione_acqua_calda" name="categoria_uso_gas" value="produzione_acqua_calda">Produzione acqua calda sanitaria</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nome_offerta_gas">Nome Offerta sottoscritta:*</label>
+                    <div style="display: flex; gap: 8px;">
+                        <select id="nome_offerta_gas" name="nome_offerta_gas" class="select-full gas-obbligatoria">
+                            <option value="" disabled selected>Caricamento offerte...</option>
+                        </select>
+                        <button type="button" id="aggiornaCteGas" class="aggiorna-cte-btn" title="Aggiorna offerte Gas Residenziale">Aggiorna CTE</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="codice_offerta_gas">Codice offerta:</label>
+                    <span id="codice_offerta_gas" class="read-only"></span>
+                    <input type="hidden" id="hidden_codice_offerta_gas" name="hidden_codice_offerta_gas">
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:18px;">
+                <label for="nome_bozza">Nome bozza:</label>
+                <input type="text" id="nome_bozza" placeholder="Nome bozza">
+                <button type="button" id="salva-bozza-btn" class="btn-save" style="margin-left:8px;">Salva bozza</button>
+            </div>
+            <div class="card-footer">
+                <button class="btn-back" type="button" onclick="window.history.back()">Indietro</button>
+                <button class="btn-next main-btn" type="submit">Avanti</button>
+            </div>
+        </form>
+    </div>
+    <footer class="main-footer">
+        © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#">Contatti</a>
+    </footer>
+    <script src="script.js"></script>
+    <!-- Altri script lasciati invariati -->
+</body>
+</html>
+    <script>
+    // Mostra/nasconde sezioni energia/gas
+    document.addEventListener('DOMContentLoaded', function() {
+        const energiaCheckbox = document.getElementById('richiesta_elettrica');
+        const gasCheckbox = document.getElementById('richiesta_gas');
+        const sezioneEnergia = document.getElementById('sezione-elettrica');
+        const sezioneGas = document.getElementById('sezione-gas');
+        function toggleSections() {
+            sezioneEnergia.style.display = energiaCheckbox.checked ? 'block' : 'none';
+            sezioneGas.style.display = gasCheckbox.checked ? 'block' : 'none';
+        }
+        energiaCheckbox.addEventListener('change', toggleSections);
+        gasCheckbox.addEventListener('change', toggleSections);
+        toggleSections();
+    });
+    </script>
+    <script>
+    // Caricamento offerte RESIDENZIALI da file locale JSON + Aggiorna CTE
+    function caricaOfferteResidenziali() {
+        fetch('/public/offerte_residenziali.json')
+        .then(response => response.json())
+        .then(offerte => {
+            const selectEE = document.getElementById('nome_offerta_ee');
+            selectEE.innerHTML = '<option value="" disabled selected>Seleziona un\'offerta</option>';
+            offerte.forEach(off => {
+                if (off.categoria && off.categoria.toLowerCase() === "energia") {
+                    selectEE.innerHTML += `<option value="${off.nome_offerta}" data-codice="${off.codice_offerta}">${off.nome_offerta}</option>`;
+                }
+            });
+            const selectGas = document.getElementById('nome_offerta_gas');
+            selectGas.innerHTML = '<option value="" disabled selected>Seleziona un\'offerta</option>';
+            offerte.forEach(off => {
+                if (off.categoria && off.categoria.toLowerCase() === "gas") {
+                    selectGas.innerHTML += `<option value="${off.nome_offerta}" data-codice="${off.codice_offerta}">${off.nome_offerta}</option>`;
+                }
+            });
+        })
+        .catch(() => {
+            document.getElementById('nome_offerta_ee').innerHTML = '<option value="" disabled selected>Errore nel caricamento offerte</option>';
+            document.getElementById('nome_offerta_gas').innerHTML = '<option value="" disabled selected>Errore nel caricamento offerte</option>';
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        caricaOfferteResidenziali();
+        document.getElementById('aggiornaCteEE').addEventListener('click', caricaOfferteResidenziali);
+        document.getElementById('aggiornaCteGas').addEventListener('click', caricaOfferteResidenziali);
+    });
+    </script>
+    <script>
+    // Mostra codice offerta quando si seleziona l'offerta
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectEE = document.getElementById('nome_offerta_ee');
+        const codiceEE = document.getElementById('codice_offerta_ee');
+        const hiddenEE = document.getElementById('hidden_codice_offerta_ee');
+        if (selectEE) {
+            selectEE.addEventListener('change', function() {
+                const selected = selectEE.options[selectEE.selectedIndex];
+                const codice = selected.getAttribute('data-codice') || '';
+                codiceEE.textContent = codice;
+                hiddenEE.value = codice;
+            });
+        }
+        const selectGas = document.getElementById('nome_offerta_gas');
+        const codiceGas = document.getElementById('codice_offerta_gas');
+        const hiddenGas = document.getElementById('hidden_codice_offerta_gas');
+        if (selectGas) {
+            selectGas.addEventListener('change', function() {
+                const selected = selectGas.options[selectGas.selectedIndex];
+                const codice = selected.getAttribute('data-codice') || '';
+                codiceGas.textContent = codice;
+                hiddenGas.value = codice;
+            });
+        }
+    });
+    </script>
+    <script>
+    // --- Salva bozza compilazione tecnica RESIDENZIALE ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const salvaBozzaBtn = document.getElementById('salva-bozza-btn');
+        if (salvaBozzaBtn) {
+            salvaBozzaBtn.addEventListener('click', function() {
+                const nomeBozzaInput = document.getElementById('nome_bozza');
+                const nome = nomeBozzaInput ? nomeBozzaInput.value.trim() : '';
+                if (!nome) {
+                    alert('Inserisci un nome per la bozza!');
+                    nomeBozzaInput && nomeBozzaInput.focus();
+                    return;
+                }
+                let technicalData = {};
+                technicalData.richiesta_elettrica = document.getElementById('richiesta_elettrica').checked;
+                if (technicalData.richiesta_elettrica) {
+                    technicalData.dati_elettrici = {
+                        tipo_richiesta: document.querySelector('input[name="tipo_richiesta_elettrica"]:checked')?.value || "",
+                        data_attivazione: document.getElementById('data_attivazione_ee')?.value || "",
+                        codice_pod_1: document.getElementById('codice_pod_1')?.value || "",
+                        codice_pod_2: document.getElementById('codice_pod_2')?.value || "",
+                        fornitore_uscente: document.getElementById('fornitore_uscente_ee')?.value || "",
+                        consumo_annuo_kwh: document.getElementById('consumo_annuo_kwh')?.value || "",
+                        potenza_impegnata: document.getElementById('potenza_impegnata_kw')?.value || "",
+                        tipologia_uso: document.querySelector('input[name="tipologia_uso"]:checked')?.value || "",
+                        nome_offerta: document.getElementById('nome_offerta_ee')?.value || "",
+                        codice_offerta: document.getElementById('hidden_codice_offerta_ee')?.value || ""
+                    };
+                }
+                technicalData.richiesta_gas = document.getElementById('richiesta_gas').checked;
+                if (technicalData.richiesta_gas) {
+                    technicalData.dati_gas = {
+                        tipo_richiesta: document.querySelector('input[name="tipo_richiesta_gas"]:checked')?.value || "",
+                        data_attivazione: document.getElementById('data_attivazione_gas')?.value || "",
+                        codice_pdr: document.getElementById('codice_pdr')?.value || "",
+                        fornitore_uscente: document.getElementById('fornitore_uscente_gas')?.value || "",
+                        consumo_annuo_smc: document.getElementById('consumo_annuo_smc')?.value || "",
+                        remi: document.getElementById('remi')?.value || "",
+                        categoria_uso: Array.from(document.querySelectorAll('input[name="categoria_uso_gas"]:checked')).map(cb => cb.value),
+                        nome_offerta: document.getElementById('nome_offerta_gas')?.value || "",
+                        codice_offerta: document.getElementById('hidden_codice_offerta_gas')?.value || ""
+                    };
+                }
+                const customerData = JSON.parse(sessionStorage.getItem('customerData') || '{}');
+                try {
+                    localStorage.setItem('bozza_' + nome, JSON.stringify({
+                        customerData,
+                        technicalData
+                    }));
+                    alert('Compilazione RESIDENZIALE salvata come bozza!');
+                } catch (e) {
+                    alert('Errore nel salvataggio della bozza: ' + e.message);
+                }
+            });
+        }
+    });
+    </script>
+    <script>
+    document.getElementById('technicalForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        let technicalData = {};
+        technicalData.richiesta_elettrica = document.getElementById('richiesta_elettrica').checked;
+        if (technicalData.richiesta_elettrica) {
+            technicalData.dati_elettrici = {
+                tipo_richiesta: document.querySelector('input[name="tipo_richiesta_elettrica"]:checked')?.value || "",
+                data_attivazione: document.getElementById('data_attivazione_ee')?.value || "",
+                codice_pod_1: document.getElementById('codice_pod_1')?.value || "",
+                codice_pod_2: document.getElementById('codice_pod_2')?.value || "",
+                fornitore_uscente: document.getElementById('fornitore_uscente_ee')?.value || "",
+                consumo_annuo_kwh: document.getElementById('consumo-annuo')?.value || "",
+                potenza_impegnata: document.getElementById('potenza_impegnata_kw')?.value || "",
+                tipologia_uso: document.querySelector('input[name="tipologia_uso"]:checked')?.value || "",
+                nome_offerta: document.getElementById('nome_offerta_ee')?.value || "",
+                codice_offerta: document.getElementById('hidden_codice_offerta_ee')?.value || ""
+            };
+        }
+        technicalData.richiesta_gas = document.getElementById('richiesta_gas').checked;
+        if (technicalData.richiesta_gas) {
+            technicalData.dati_gas = {
+                tipo_richiesta: document.querySelector('input[name="tipo_richiesta_gas"]:checked')?.value || "",
+                data_attivazione: document.getElementById('data_attivazione_gas')?.value || "",
+                codice_pdr: document.getElementById('codice_pdr')?.value || "",
+                fornitore_uscente: document.getElementById('fornitore_uscente_gas')?.value || "",
+                consumo_annuo_smc: document.getElementById('consumo_annuo_smc')?.value || "",
+                remi: document.getElementById('remi')?.value || "",
+                categoria_uso: Array.from(document.querySelectorAll('input[name="categoria_uso_gas"]:checked')).map(cb => cb.value),
+                nome_offerta: document.getElementById('nome_offerta_gas')?.value || "",
+                codice_offerta: document.getElementById('hidden_codice_offerta_gas')?.value || ""
+            };
+        }
+        sessionStorage.setItem('technicalData', JSON.stringify(technicalData));
+        window.location.href = 'riepilogo.html';
+    });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

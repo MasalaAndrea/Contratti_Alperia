@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore PDF Alperia - Dati Cliente Business</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .hidden { display: none; }
+        .error-message { color: red; font-size: 0.9em; }
+        .form-row { display: flex; gap: 20px; }
+        @media (max-width: 700px) {
+            .form-row { flex-direction: column; gap: 0; }
+        }
+    </style>
+</head>
+<body class="business">
+    <div class="container">
+        <h1>Contratto Business</h1>
+        <h2>Pagina 1 di 3: Dati Cliente Business</h2>
+        <form id="businessForm">
+            <!-- Dati Azienda -->
+            <div class="form-section">
+                <h3>Dati Azienda</h3>
+                <div class="form-group">
+                    <label for="ragione_sociale">Ragione Sociale:*</label>
+                    <input type="text" id="ragione_sociale" name="ragione_sociale" required>
+                </div>
+                <div class="form-group">
+                    <label for="partita_iva">Partita IVA:*</label>
+                    <input type="text" id="partita_iva" name="partita_iva" required maxlength="11">
+                    <div id="piva-error" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="codice_fiscale_azienda">Codice Fiscale:*</label>
+                    <input type="text" id="codice_fiscale_azienda" name="codice_fiscale_azienda" maxlength="16" required>
+                    <div id="cf-azienda-error" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="indirizzo_sede">Indirizzo sede legale:*</label>
+                    <input type="text" id="indirizzo_sede" name="indirizzo_sede" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="n_sede">N:*</label>
+                        <input type="text" id="n_sede" name="n_sede" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="comune_sede">Comune:*</label>
+                        <input type="text" id="comune_sede" name="comune_sede" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cap_sede">CAP:*</label>
+                        <input type="text" id="cap_sede" name="cap_sede" required maxlength="5">
+                        <div id="cap-sede-error" class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="provincia_sede">Prov.:*</label>
+                        <input type="text" id="provincia_sede" name="provincia_sede" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email_azienda">E-mail:*</label>
+                    <input type="email" id="email_azienda" name="email_azienda" required>
+                </div>
+                <div class="form-group">
+                    <label for="pec">PEC:*</label>
+                    <input type="email" id="pec" name="pec" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telefono">Telefono:</label>
+                        <input type="tel" id="telefono" name="telefono">
+                    </div>
+                    <div class="form-group">
+                        <label for="cell">Cell:*</label>
+                        <input type="tel" id="cell" name="cell" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="codice_sdi">Codice SDI:*</label>
+                    <input type="text" id="codice_sdi" name="codice_sdi" required maxlength="7">
+                    <div id="sdi-error" class="error-message"></div>
+                </div>
+            </div>
+
+            <!-- Dati Rappresentante Legale -->
+            <div class="form-section">
+                <h3>Dati Rappresentante Legale*</h3>
+                <div class="form-group">
+                    <label for="rapp_cognome">Cognome:*</label>
+                    <input type="text" id="rapp_cognome" name="rapp_cognome" required>
+                </div>
+                <div class="form-group">
+                    <label for="rapp_nome">Nome:*</label>
+                    <input type="text" id="rapp_nome" name="rapp_nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="rapp_codice_fiscale">Codice Fiscale:*</label>
+                    <input type="text" id="rapp_codice_fiscale" name="rapp_codice_fiscale" required maxlength="16">
+                    <div id="cf-rappresentante-error" class="error-message"></div>
+                </div>
+                <!-- SEZIONE DOCUMENTO DI IDENTITA' ELIMINATA -->
+            </div>
+
+            <!-- Sede di Fornitura -->
+            <div class="form-section">
+                <h3>DATI IDENTIFICATIVI SEDE DI FORNITURA*</h3>
+                <div class="form-group">
+                    <label>Indica la sede di fornitura:</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" id="fornitura_uguale" name="sede_fornitura" value="uguale" checked>
+                            Uguale a sede legale
+                        </label>
+                        <label>
+                            <input type="radio" id="fornitura_diversa" name="sede_fornitura" value="diversa">
+                            Diverso (specificare di seguito)
+                        </label>
+                    </div>
+                </div>
+                <div id="dati-fornitura" class="hidden">
+                    <div class="form-group">
+                        <label for="indirizzo_fornitura">Indirizzo sede di fornitura:*</label>
+                        <input type="text" id="indirizzo_fornitura" name="indirizzo_fornitura" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="n_fornitura">N:*</label>
+                            <input type="text" id="n_fornitura" name="n_fornitura" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cap_fornitura">CAP:*</label>
+                            <input type="text" id="cap_fornitura" name="cap_fornitura" required maxlength="5" minlength="5">
+                            <div id="cap-fornitura-error" class="error-message"></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="comune_fornitura">Comune:*</label>
+                            <input type="text" id="comune_fornitura" name="comune_fornitura" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="provincia_fornitura">Provincia:*</label>
+                            <input type="text" id="provincia_fornitura" name="provincia_fornitura" required maxlength="2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+              <button type="button" onclick="window.history.back()">Indietro</button>
+              <button type="submit">Avanti</button>
+            </div>
+        </form>
+    </div>
+    <footer class="main-footer">
+        © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#">Contatti</a>
+    </footer>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Validazione Partita IVA
+        const piva = document.getElementById('partita_iva');
+        const pivaError = document.getElementById('piva-error');
+        if (piva) {
+            piva.addEventListener('input', function() {
+                if (piva.value.length !== 11 && piva.value.length > 0) {
+                    pivaError.textContent = 'La Partita IVA deve essere di 11 cifre.';
+                } else {
+                    pivaError.textContent = '';
+                }
+            });
+        }
+
+        // Validazione Codice Fiscale Azienda
+        const cfAzienda = document.getElementById('codice_fiscale_azienda');
+        const cfAziendaError = document.getElementById('cf-azienda-error');
+        if (cfAzienda) {
+            cfAzienda.addEventListener('input', function() {
+                if (cfAzienda.value.length !== 16 && cfAzienda.value.length > 0) {
+                    cfAziendaError.textContent = 'Il Codice Fiscale deve essere di 16 caratteri.';
+                } else {
+                    cfAziendaError.textContent = '';
+                }
+            });
+        }
+
+        // Validazione CAP sede
+        const capSede = document.getElementById('cap_sede');
+        const capSedeError = document.getElementById('cap-sede-error');
+        if (capSede) {
+            capSede.addEventListener('input', function() {
+                if (capSede.value.length !== 5 && capSede.value.length > 0) {
+                    capSedeError.textContent = 'Il CAP deve essere di 5 caratteri.';
+                } else {
+                    capSedeError.textContent = '';
+                }
+            });
+        }
+
+        // Validazione Codice SDI
+        const sdi = document.getElementById('codice_sdi');
+        const sdiError = document.getElementById('sdi-error');
+        if (sdi) {
+            sdi.addEventListener('input', function() {
+                if (sdi.value.length !== 7 && sdi.value.length > 0) {
+                    sdiError.textContent = 'Il Codice SDI deve essere di 7 caratteri.';
+                } else {
+                    sdiError.textContent = '';
+                }
+            });
+        }
+
+        // Validazione CF rappresentante legale
+        const rappCf = document.getElementById('rapp_codice_fiscale');
+        const rappCfError = document.getElementById('cf-rappresentante-error');
+        if (rappCf) {
+            rappCf.addEventListener('input', function() {
+                if (rappCf.value.length !== 16 && rappCf.value.length > 0) {
+                    rappCfError.textContent = 'Il Codice Fiscale deve essere di 16 caratteri.';
+                } else {
+                    rappCfError.textContent = '';
+                }
+            });
+        }
+
+        // Sede di fornitura
+        const radioUguale = document.getElementById('fornitura_uguale');
+        const radioDiversa = document.getElementById('fornitura_diversa');
+        const datiFornitura = document.getElementById('dati-fornitura');
+        const capFornitura = document.getElementById('cap_fornitura');
+        const capFornituraError = document.getElementById('cap-fornitura-error');
+
+        function toggleFornitura() {
+            if (radioDiversa.checked) {
+                datiFornitura.classList.remove('hidden');
+                Array.from(datiFornitura.querySelectorAll('input')).forEach(input => input.required = true);
+            } else {
+                datiFornitura.classList.add('hidden');
+                Array.from(datiFornitura.querySelectorAll('input')).forEach(input => input.required = false);
+            }
+        }
+        radioUguale.addEventListener('change', toggleFornitura);
+        radioDiversa.addEventListener('change', toggleFornitura);
+
+        if (capFornitura) {
+            capFornitura.addEventListener('input', function() {
+                if (datiFornitura.classList.contains('hidden')) {
+                    capFornituraError.textContent = '';
+                    return;
+                }
+                if (capFornitura.value.length !== 5 && capFornitura.value.length > 0) {
+                    capFornituraError.textContent = 'Il CAP deve essere di 5 caratteri.';
+                } else {
+                    capFornituraError.textContent = '';
+                }
+            });
+        }
+
+        // Validazione finale submit + salvataggio dati + redirect
+        const businessForm = document.getElementById('businessForm');
+        if (businessForm) {
+            businessForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                let valid = true;
+
+                // Validazione campi principali
+                if (piva && piva.value.length !== 11) {
+                    pivaError.textContent = 'La Partita IVA deve essere di 11 cifre.';
+                    valid = false;
+                }
+
+                if (cfAzienda && cfAzienda.value.length !== 16) {
+                    cfAziendaError.textContent = 'Il Codice Fiscale deve essere di 16 caratteri.';
+                    valid = false;
+                }
+
+                if (capSede && capSede.value.length !== 5) {
+                    capSedeError.textContent = 'Il CAP deve essere di 5 caratteri.';
+                    valid = false;
+                }
+
+                if (sdi && sdi.value.length !== 7) {
+                    sdiError.textContent = 'Il Codice SDI deve essere di 7 caratteri.';
+                    valid = false;
+                }
+
+                if (rappCf && rappCf.value.length !== 16) {
+                    rappCfError.textContent = 'Il Codice Fiscale deve essere di 16 caratteri.';
+                    valid = false;
+                }
+
+                // Validazione dati fornitura se "Diverso"
+                if (radioDiversa.checked) {
+                    Array.from(datiFornitura.querySelectorAll('input')).forEach(input => {
+                        if (!input.value) valid = false;
+                    });
+                    if (capFornitura.value.length !== 5) {
+                        capFornituraError.textContent = 'Il CAP deve essere di 5 caratteri.';
+                        valid = false;
+                    }
+                }
+
+                if (valid) {
+                    // Salvataggio dati in sessionStorage
+                    const aziendaData = {
+                        ragione_sociale: document.getElementById('ragione_sociale').value,
+                        partita_iva: document.getElementById('partita_iva').value,
+                        codice_fiscale_azienda: document.getElementById('codice_fiscale_azienda').value,
+                        indirizzo_sede: document.getElementById('indirizzo_sede').value,
+                        n_sede: document.getElementById('n_sede').value,
+                        comune_sede: document.getElementById('comune_sede').value,
+                        cap_sede: document.getElementById('cap_sede').value,
+                        provincia_sede: document.getElementById('provincia_sede').value,
+                        email_azienda: document.getElementById('email_azienda').value,
+                        pec: document.getElementById('pec').value,
+                        telefono: document.getElementById('telefono').value,
+                        cell: document.getElementById('cell').value,
+                        codice_sdi: document.getElementById('codice_sdi').value,
+                        rapp_cognome: document.getElementById('rapp_cognome').value,
+                        rapp_nome: document.getElementById('rapp_nome').value,
+                        rapp_codice_fiscale: document.getElementById('rapp_codice_fiscale').value,
+                        // documento_identita: ELIMINATO!
+                        sede_fornitura: radioDiversa.checked ? 'diversa' : 'uguale',
+                        indirizzo_fornitura: radioDiversa.checked ? document.getElementById('indirizzo_fornitura').value : '',
+                        n_fornitura: radioDiversa.checked ? document.getElementById('n_fornitura').value : '',
+                        cap_fornitura: radioDiversa.checked ? document.getElementById('cap_fornitura').value : '',
+                        comune_fornitura: radioDiversa.checked ? document.getElementById('comune_fornitura').value : '',
+                        provincia_fornitura: radioDiversa.checked ? document.getElementById('provincia_fornitura').value : ''
+                    };
+
+                    sessionStorage.setItem('aziendaData', JSON.stringify(aziendaData));
+
+                    window.location.href = 'pagina3_business.html';
+                    return;
+                }
+            });
+        }
+
+        // inizializza visualizzazione
+        toggleFornitura();
+    });
+    </script>
+    <script src="script_business.js"></script>
+</body>
+</html>

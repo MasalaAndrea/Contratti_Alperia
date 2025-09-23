@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riepilogo Dati Business</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="business">
+    <div class="container">
+        <h1>Riepilogo Dati Business</h1>
+
+        <div id="riepilogo-business-card-cliente" class="card-dati-cliente card-centrale">
+            <!-- Dati Cliente Business -->
+        </div>
+
+        <div id="riepilogo-business-card-tecnici" class="card-dati-tecnici card-centrale">
+            <!-- Dati Tecnici di Fornitura -->
+        </div>
+
+        <div id="riepilogo-business-card-consensi" class="card-consensi card-centrale">
+            <!-- Pagamento e Consensi -->
+        </div>
+
+        <div class="form-group" style="margin-top:32px;">
+            <label for="nome_file_pdf">Nome del file PDF:</label>
+            <input type="text" id="nome_file_pdf" placeholder="Nome del file PDF">
+        </div>
+
+        <button id="genera-pdf-btn" class="main-btn">Genera Contratto</button>
+        <button id="condividi-pdf-btn" class="main-btn" style="display:none; margin-top:12px;">Condividi PDF</button>
+        <span id="condividi-pdf-msg" style="display:none; color:green; margin-left:12px;"></span>
+
+        <div class="form-group" style="margin-top:32px;">
+            <label for="nome_bozza">Nome bozza:</label>
+            <input type="text" id="nome_bozza" placeholder="Nome bozza business">
+            <button id="salva-bozza-btn" class="bozza-btn" style="margin-left:8px;">Salva bozza</button>
+            <button onclick="window.location.href='index.html'" style="float:right; margin-bottom: 18px;">HOME</button>
+        </div>
+         
+    </div>
+    <div id="avviso-documenti" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(40,40,40,0.33); z-index:9999;">
+        <div style="background:#fffbe6; border:2px solid #ff0000; max-width:350px; margin:60px auto; padding:28px 16px; border-radius:8px; color:#333; font-size:1.15em; box-shadow:0 2px 18px rgba(0,0,0,0.12); text-align:left;">
+            <strong>Attenzione!</strong>
+            <br>
+            Ricordati di richiedere al cliente copia dei seguenti documenti:
+            <ul style="margin-top:10px; margin-bottom:10px;">
+                <li>Documento d'identità</li>
+                <li>Visura camerale</li>
+                <li>Bollette energia</li>
+                <li>Bollette gas</li>
+            </ul>
+            <button id="avviso-ok-btn" style="display:block; margin:18px auto 0 auto; padding:7px 22px; font-size:1em; border-radius:5px; border:none; background:#ff9800; color:#fff; cursor:pointer;">OK</button>
+        </div>
+    </div>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="script_business.js"></script>
+    <footer class="main-footer">
+        © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#">Contatti</a>
+    </footer>
+    <script>
+    // RIEPILOGO BUSINESS - CARD COLORATE
+    document.addEventListener('DOMContentLoaded', async () => {
+        const aziendaData = JSON.parse(sessionStorage.getItem('aziendaData')) || {};
+        const technicalData = JSON.parse(sessionStorage.getItem('technicalData')) || {};
+        const paymentData = JSON.parse(sessionStorage.getItem('paymentData')) || {};
+
+        function formattaData(data) {
+            if (!data) return '';
+            const parti = data.split(/[-\/]/);
+            if (parti.length === 3) {
+                return `${parti[2]}/${parti[1]}/${parti[0]}`;
+            }
+            return data;
+        }
+
+        // Card Cliente
+        const cardCliente = document.getElementById('riepilogo-business-card-cliente');
+        if (cardCliente) {
+            cardCliente.innerHTML = `
+                <div class="card-title">Dati Cliente Business</div>
+                <div class="riepilogo-campo"><span class="campo-nome">Ragione Sociale:</span> <span class="campo-valore">${aziendaData.ragione_sociale || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Partita IVA:</span> <span class="campo-valore">${aziendaData.partita_iva || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Codice Fiscale:</span> <span class="campo-valore">${aziendaData.codice_fiscale_azienda || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Indirizzo Sede Legale:</span> <span class="campo-valore">${aziendaData.indirizzo_sede || ''}, N. ${aziendaData.n_sede || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Comune:</span> <span class="campo-valore">${aziendaData.comune_sede || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Provincia:</span> <span class="campo-valore">${aziendaData.provincia_sede || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">CAP:</span> <span class="campo-valore">${aziendaData.cap_sede || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Email:</span> <span class="campo-valore">${aziendaData.email_azienda || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">PEC:</span> <span class="campo-valore">${aziendaData.pec || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Telefono:</span> <span class="campo-valore">${aziendaData.telefono || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Cell:</span> <span class="campo-valore">${aziendaData.cell || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Codice SDI:</span> <span class="campo-valore">${aziendaData.codice_sdi || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Rappresentante Legale:</span> <span class="campo-valore">${aziendaData.rapp_cognome || ''} ${aziendaData.rapp_nome || ''} (${aziendaData.rapp_codice_fiscale || ''})</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Sede di Fornitura:</span> <span class="campo-valore">${
+                    aziendaData.sede_fornitura === 'diversa'
+                        ? `${aziendaData.indirizzo_fornitura || ''}, N. ${aziendaData.n_fornitura || ''}, CAP: ${aziendaData.cap_fornitura || ''}, Comune: ${aziendaData.comune_fornitura || ''}, Provincia: ${aziendaData.provincia_fornitura || ''}`
+                        : `Uguale a sede legale`
+                }</span></div>
+            `;
+        }
+
+        // Card Tecnici
+        const cardTecnici = document.getElementById('riepilogo-business-card-tecnici');
+        if (cardTecnici) {
+            let htmlTecnici = `<div class="card-title">Dati Tecnici di Fornitura</div>`;
+            // ENERGIA
+            if (technicalData.richiesta_elettrica && technicalData.dati_elettrici) {
+                htmlTecnici += `
+                    <div style="margin-bottom: 12px; font-weight:bold; color:#115890;">Energia Elettrica</div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Tipo Richiesta:</span> <span class="campo-valore">${technicalData.dati_elettrici.tipo_richiesta || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Data Attivazione:</span> <span class="campo-valore">${formattaData(technicalData.dati_elettrici.data_attivazione) || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Codice POD:</span> <span class="campo-valore">IT${technicalData.dati_elettrici.codice_pod_1 || ''}E${technicalData.dati_elettrici.codice_pod_2 || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Fornitore Uscente:</span> <span class="campo-valore">${technicalData.dati_elettrici.fornitore_uscente || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Consumo Annuo (kWh):</span> <span class="campo-valore">${technicalData.dati_elettrici.consumo_annuo_kwh || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Potenza Impegnata (kW):</span> <span class="campo-valore">${technicalData.dati_elettrici.potenza_impegnata || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Tipologia Uso:</span> <span class="campo-valore">${technicalData.dati_elettrici.tipologia_uso || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Tensione:</span> <span class="campo-valore">${technicalData.dati_elettrici.tensione || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Nome Offerta:</span> <span class="campo-valore">${technicalData.dati_elettrici.nome_offerta || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Codice Offerta:</span> <span class="campo-valore">${technicalData.dati_elettrici.codice_offerta || ''}</span></div>
+                `;
+            }
+            // GAS
+            if (technicalData.richiesta_gas && technicalData.dati_gas) {
+                htmlTecnici += `
+                    <div style="margin-bottom: 12px; font-weight:bold; color:#c45a13;">Gas Naturale</div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Tipo Richiesta:</span> <span class="campo-valore">${technicalData.dati_gas.tipo_richiesta || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Data Attivazione:</span> <span class="campo-valore">${formattaData(technicalData.dati_gas.data_attivazione) || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Codice PDR:</span> <span class="campo-valore">${technicalData.dati_gas.codice_pdr || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Fornitore Uscente:</span> <span class="campo-valore">${technicalData.dati_gas.fornitore_uscente || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Consumo Annuo (kWh):</span> <span class="campo-valore">${technicalData.dati_gas.consumo_annuo_gas || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">REMI:</span> <span class="campo-valore">${technicalData.dati_gas.remi || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Categoria uso:</span> <span class="campo-valore">${(technicalData.dati_gas.categoria_uso && technicalData.dati_gas.categoria_uso.join(', ')) || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Nome Offerta:</span> <span class="campo-valore">${technicalData.dati_gas.nome_offerta || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Codice Offerta:</span> <span class="campo-valore">${technicalData.dati_gas.codice_offerta || ''}</span></div>
+                `;
+            }
+            cardTecnici.innerHTML = htmlTecnici;
+        }
+
+        // Card Consensi e Pagamento
+        const cardConsensi = document.getElementById('riepilogo-business-card-consensi');
+        if (cardConsensi) {
+            let htmlConsensi = `<div class="card-title">Pagamento e Consensi</div>`;
+            if (paymentData.autorizzazione_sdd) {
+                htmlConsensi += `
+                    <div style="color:#c45a13; font-weight:500; margin-bottom:8px;">Autorizzazione Addebito Diretto (SDD)</div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Cognome e Nome debitore:</span> <span class="campo-valore">${paymentData.sdd_dati?.cognome_nome || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Indirizzo debitore:</span> <span class="campo-valore">${paymentData.sdd_dati?.indirizzo_debitore || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">Codice Fiscale/Partita IVA debitore:</span> <span class="campo-valore">${paymentData.sdd_dati?.cf_debitore || ''}</span></div>
+                    <div class="riepilogo-campo"><span class="campo-nome">IBAN:</span> <span class="campo-valore">${paymentData.sdd_dati?.iban || ''}</span></div>
+                `;
+            }
+            htmlConsensi += `
+                <div style="margin-top:10px;"></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Presa Visione e Consenso:</span> <span class="campo-valore">${paymentData.consenso_obbligatorio ? 'Sì' : 'No'}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Consensi Commerciali:</span> <span class="campo-valore">
+                    Promozione: ${(paymentData.consensi_commerciali && paymentData.consensi_commerciali.promozione ? 'Sì' : 'No')}, 
+                    Profilazione: ${(paymentData.consensi_commerciali && paymentData.consensi_commerciali.profilazione ? 'Sì' : 'No')}, 
+                    Terzi: ${(paymentData.consensi_commerciali && paymentData.consensi_commerciali.terzi ? 'Sì' : 'No')}
+                </span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Dichiarazione Sostitutiva:</span> <span class="campo-valore">${paymentData.dichiarazione_notorieta || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Documento d'Identità:</span> <span class="campo-valore">${(paymentData.documento_identita && paymentData.documento_identita.join(', ')) || ''}</span></div>
+                <div class="riepilogo-campo"><span class="campo-nome">Data firma:</span> <span class="campo-valore">${formattaData(paymentData.data_firma) || ''}</span></div>
+            `;
+            if (paymentData.firma) {
+                htmlConsensi += `<div class="riepilogo-campo"><span class="campo-nome">Firma:</span> <span class="campo-valore"><img src="${paymentData.firma}" alt="Firma del cliente" style="border: 1px solid #ccc; max-width: 100%; height: auto;"></span></div>`;
+            }
+            cardConsensi.innerHTML = htmlConsensi;
+        }
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riepilogo Dati Residenziale</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="residenziale">
+    <div class="container">
+        <h1>Riepilogo Dati Residenziale</h1>
+
+        <!-- CARD DATI CLIENTE -->
+        <div id="riepilogo-card-cliente" class="card-dati-cliente card-centrale">
+            <!-- I dati cliente vengono popolati da JS -->
+        </div>
+        <!-- CARD DATI TECNICI -->
+        <div id="riepilogo-card-tecnici" class="card-dati-tecnici card-centrale">
+            <!-- I dati tecnici vengono popolati da JS -->
+        </div>
+        <!-- CARD PAGAMENTO E CONSENSI -->
+        <div id="riepilogo-card-consensi" class="card-consensi card-centrale">
+            <!-- I dati pagamento/consensi vengono popolati da JS -->
+        </div>
+
+        <div class="form-group" style="margin-top:32px;">
+            <label for="nome_file_pdf">Nome del file PDF:</label>
+            <input type="text" id="nome_file_pdf" placeholder="Nome del file PDF">
+        </div>
+
+        <button id="genera-pdf-btn" class="main-btn">Genera Contratto</button>
+        <button id="condividi-pdf-btn" class="main-btn" style="display:none; margin-top:12px;">Condividi PDF</button>
+       <span id="condividi-pdf-msg" style="display:none; color:green; margin-left:12px;"></span>
+       
+        <div class="form-group" style="margin-top:32px;">
+            <label for="nome_bozza">Nome della bozza:</label>
+            <input type="text" id="nome_bozza" placeholder="Nome della bozza (es: Rossi_10set)">
+            <button id="salva-bozza-btn" class="bozza-btn" style="margin-left:8px;">Salva bozza</button>
+            <button onclick="window.location.href='index.html'" style="float:right; margin-bottom: 18px;">HOME</button>
+            <span id="salva-bozza-msg" style="display:none; color:green; margin-left:12px;">Compilazione salvata!</span>
+        </div>
+    </div>
+    <div id="avviso-documenti" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(40,40,40,0.33); z-index:9999;">
+      <div style="background:#fffbe6; border:2px solid #ff0000; max-width:350px; margin:60px auto; padding:28px 16px; border-radius:8px; color:#333; font-size:1.15em; box-shadow:0 2px 18px rgba(0,0,0,0.12); text-align:left;">
+        <strong>Attenzione!</strong>
+        <br>
+        Ricordati di richiedere al cliente copia dei seguenti documenti:
+        <ul style="margin-top:10px; margin-bottom:10px;">
+          <li>Documento d'identità</li>
+          <li>Bollette energia</li>
+          <li>Bollette gas</li>
+        </ul>
+        <button id="avviso-ok-btn" style="display:block; margin:18px auto 0 auto; padding:7px 22px; font-size:1em; border-radius:5px; border:none; background:#ff9800; color:#fff; cursor:pointer;">OK</button>
+      </div>
+    </div>
+    <footer class="main-footer">
+        © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#">Contatti</a>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="riepilogo.js"></script>
+</body>
+</html>

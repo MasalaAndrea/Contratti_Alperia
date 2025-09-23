@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore PDF Alperia - Pagamento e Consensi</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .section-box {
+            background: #f9fafd;
+            border: 2px solid #d1e4f6;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(30,80,140,0.07);
+            padding: 26px 20px 20px 20px;
+            margin-bottom: 28px;
+        }
+        .section-box h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #1c3664;
+        }
+        .error-border {
+            border: 2px solid #e94d4d !important;
+        }
+        @media (max-width: 700px) {
+            .section-box {
+                padding: 12px 6px 8px 6px;
+            }
+        }
+    </style>
+</head>
+<body class="residenziale">
+    <div class="container">
+        <h1>Contratto residenziale</h1>
+        <h2>Pagina 3 di 3: Pagamento e Consensi</h2>
+        <form id="paymentForm">
+            <div class="form-section section-box">
+                <h3>Autorizzazione Addebito Diretto (SDD)</h3>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="autorizzazione_sdd" name="autorizzazione_sdd">
+                            Autorizzazione addebito diretto in conto corrente
+                        </label>
+                    </div>
+                </div>
+                <div id="sezione-sdd" style="display: none;">
+                    <div class="form-group">
+                        <label for="cognome_nome">Cognome e Nome debitore:*</label>
+                        <input type="text" id="cognome_nome" name="cognome_nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="indirizzo_debitore">Indirizzo debitore:*</label>
+                        <input type="text" id="indirizzo_debitore" name="indirizzo_debitore">
+                    </div>
+                    <div class="form-group">
+                        <label for="cf_debitore">Partiva Iva/Codice Fiscale debitore:*</label>
+                        <input type="text" id="cf_debitore" name="cf_debitore" maxlength="16" minlength="11">
+                        <div id="cf_debitore-error" class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="iban">IBAN:*</label>
+                        <input type="text" id="iban" name="iban" maxlength="27" minlength="27">
+                        <div id="iban-error" class="error-message"></div>
+                    </div>
+               </div>
+            </div>
+            <div class="form-section section-box">
+                <h3>Consensi</h3>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="consenso_obbligatorio" name="consenso_obbligatorio" checked disabled>
+                        Presa visione dell’Informativa sulla Privacy e rilascio del consenso al trattamento dei dati personali per le finalità legate all’erogazione del servizio.
+                    </label>
+                    <label>
+                        <input type="checkbox" id="consenso_promozione" name="consenso_promozione">
+                        Consenso al trattamento dei dati personali per finalità di promozione e marketing
+                    </label>
+                    <label>
+                        <input type="checkbox" id="consenso_profilazione" name="consenso_profilazione">
+                        Consenso al trattamento dei dati personali per finalità di profilazione
+                    </label>
+                    <label>
+                        <input type="checkbox" id="consenso_terzi" name="consenso_terzi">
+                        Consenso alla comunicazione dei dati personali a terzi per le medesime finalità di cui ai punti precedenti.
+                    </label>
+                </div>
+            </div>
+            <div class="form-section section-box">
+                <h3>Dichiarazioni*</h3>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="dichiarazione" value="proprietario">
+                        Dichiara di essere il proprietario dell’immobile
+                    </label>
+                    <label>
+                        <input type="radio" name="dichiarazione" value="affitto">
+                        Dichiara di essere in affitto/locazione
+                    </label>
+                </div>
+            </div>
+            <div class="form-section section-box">
+                <h3>Documento d'Identità*</h3>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="carta_identita" name="documento_identita" value="Carta d'identità">
+                        Carta d'identità
+                    </label>
+                    <label>
+                        <input type="checkbox" id="patente" name="documento_identita" value="Patente">
+                        Patente
+                    </label>
+                    <label>
+                        <input type="checkbox" id="passaporto" name="documento_identita" value="Passaporto">
+                        Passaporto
+                    </label>
+                </div>
+            </div>
+            <div class="form-section">
+                <h2>Data e Firma*</h2>
+                <div class="form-group">
+                    <label for="data_firma">Data:*</label>
+                    <input type="date" id="data_firma" name="data_firma" required>
+                </div>
+                <div class="form-group">
+                    <label>Firma:*</label>
+                    <canvas id="firma-pad" width="345" height="250" style="border: 3px solid rgb(255, 0, 0);"></canvas>
+                    <div class="text-center">
+                        <button type="button" id="clear-firma">Cancella Firma</button>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-buttons">
+                <button type="button" onclick="window.history.back()">Indietro</button>
+                <button type="submit" class="main-btn">Avanti</button>
+            </div>
+        </form>
+    </div>
+    <footer class="main-footer">
+        © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#">Contatti</a>
+    </footer>
+    <script src="firma.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const autorizzazioneSddCheckbox = document.getElementById('autorizzazione_sdd');
+        const sezioneSdd = document.getElementById('sezione-sdd');
+        const campiSdd = [
+            document.getElementById('cognome_nome'),
+            document.getElementById('indirizzo_debitore'),
+            document.getElementById('cf_debitore'),
+            document.getElementById('iban')
+        ];
+        function aggiornaObbligatorietaSdd() {
+            if (autorizzazioneSddCheckbox.checked) {
+                sezioneSdd.style.display = 'block';
+                campiSdd.forEach(f => f && f.setAttribute('required', 'required'));
+            } else {
+                sezioneSdd.style.display = 'none';
+                campiSdd.forEach(f => f && f.removeAttribute('required'));
+            }
+        }
+        autorizzazioneSddCheckbox.addEventListener('change', aggiornaObbligatorietaSdd);
+        aggiornaObbligatorietaSdd();
+        // Validazione in submit
+        const paymentForm = document.getElementById('paymentForm');
+        if (paymentForm) {
+            paymentForm.addEventListener('submit', function(event) {
+                if (autorizzazioneSddCheckbox.checked) {
+                    let errore = false;
+                    campiSdd.forEach(f => {
+                        if (f && !f.value.trim()) {
+                            errore = true;
+                            f.classList.add('error-border');
+                        } else {
+                            f && f.classList.remove('error-border');
+                        }
+                    });
+                    if (errore) {
+                        event.preventDefault();
+                        alert('Compila tutti i campi obbligatori per l\'addebito diretto (SDD).');
+                        return;
+                    }
+                } else {
+                    campiSdd.forEach(f => f && f.classList.remove('error-border'));
+                }
+                const dichiarazione = document.querySelector('input[name="dichiarazione"]:checked');
+                if (!dichiarazione) {
+                    event.preventDefault();
+                    alert("Seleziona Proprietario o Affitto nella sezione Dichiarazioni.");
+                    return;
+                }
+                const documento = document.querySelectorAll('input[name="documento_identita"]:checked');
+                if (documento.length === 0) {
+                    event.preventDefault();
+                    alert("Seleziona almeno un documento d'identità: Carta d'identità, Patente o Passaporto.");
+                    return;
+                }
+            });
+        }
+    });
+    </script>
+    <script src="script.js"></script>
+    <script src="firma.js"></script>
+</body>
+</html>

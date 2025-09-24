@@ -195,4 +195,5 @@ app.post('/generate-pdf-base64', async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log('Server attivo su porta 3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log('Server attivo su porta', PORT));

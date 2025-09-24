@@ -210,9 +210,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 formData.append('mail_collaboratore', localStorage.getItem('mail_collaboratore') || '');
                 formData.append('mail_cliente', localStorage.getItem('mail_cliente') || '');
 
-                const response = await fetch('http://192.168.0.132:3000/generate-pdf', {
-                    method: 'POST',
-                    body: formData
+                const response = await fetch('https://contratti-alperia.onrender.com/generate-pdf', {
+                method: 'POST',
+                body: formData
                 });
 
                 if (!response.ok) {

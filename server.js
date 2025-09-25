@@ -1,3 +1,5 @@
+require('dotenv').config(); // <--- DOTENV PRIMA DI TUTTO!
+
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -21,7 +23,7 @@ app.get('/', (req, res) => {
 });
 
 // --- SendGrid setup ---
-sgMail.setApiKey('***REMOVED***');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Funzione per invio email con allegato PDF
 async function inviaEmail(destinatario, mittente, ccList, oggetto, testo, pdfBuffer, filename) {

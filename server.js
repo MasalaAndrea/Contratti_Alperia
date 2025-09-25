@@ -26,7 +26,7 @@ const transporter = nodemailer.createTransport({
   port: 2525,
   auth: {
     user: '9d00d3667fb869',
-    pass: 'Traduzione in FACD'
+    pass: 'a53d361ae4facd'
   }
 });
 

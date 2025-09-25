@@ -5,6 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generatore PDF Alperia - Dati Tecnici</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .inline-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .pod-input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .pod-prefix {
+            padding: 0 5px;
+            font-weight: bold;
+        }
+        .pod-small {
+            width: 40px;
+            margin-right: 4px;
+        }
+        .pod-large {
+            width: 120px;
+        }
+        .select-full {
+            width: 100%;
+            min-width: 200px;
+            padding: 7px 10px;
+            border-radius: 4px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            background: #f9f9f9;
+        }
+        .aggiorna-cte-btn {
+            margin-left: 10px;
+            padding: 6px 14px;
+            font-size: 0.95em;
+            border-radius: 4px;
+            border: 1px solid #1a76d2;
+            background: #e3f1ff;
+            color: #1a76d2;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        .error-border {
+            border: 2px solid red !important;
+        }
+
+        /* CARD ENERGIA E GAS BUSINESS */
+        .card-energia {
+            background: #f5faff;
+            border-left: 6px solid #1a76d2;
+            box-shadow: 0 2px 16px rgba(0,34,85,0.09);
+            border-radius: 14px;
+            padding: 30px 18px 20px 18px;
+            margin-bottom: 28px;
+        }
+        .card-gas {
+            background: #fff7f2;
+            border-left: 6px solid #d85c25;
+            box-shadow: 0 2px 16px rgba(218,92,37,0.09);
+            border-radius: 14px;
+            padding: 30px 18px 20px 18px;
+            margin-bottom: 28px;
+        }
+        @media (max-width: 700px) {
+            .inline-options { flex-direction: column; gap: 0; align-items: flex-start; }
+            .pod-input-group { flex-direction: column; gap: 0; align-items: flex-start; }
+            .card-energia, .card-gas { padding: 15px 5vw; }
+        }
+        /* Allinea i check/radio al testo */
+        .checkbox-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            line-height: 1.2;
+        }
+        .checkbox-inline input[type="checkbox"],
+        .checkbox-inline input[type="radio"] {
+            vertical-align: middle;
+            accent-color: #1a76d2;
+        }
+    </style>
 </head>
 <body class="residenziale">
     <header class="main-header">
@@ -29,7 +117,7 @@
                     </label>
                 </div>
             </div>
-            <div id="sezione-elettrica" style="display: none;">
+            <div id="sezione-elettrica" class="card-energia hidden">
                 <h3>Dati Energia Elettrica</h3>
                 <div class="form-group">
                     <label>Tipo Richiesta:*</label>
@@ -92,7 +180,7 @@
                     <input type="hidden" id="hidden_codice_offerta_ee" name="hidden_codice_offerta_ee">
                 </div>
             </div>
-            <div id="sezione-gas" style="display: none;">
+            <div id="sezione-gas" class="card-gas hidden">
                 <h3>Dati Gas Naturale</h3>
                 <div class="form-group">
                     <label>Tipo Richiesta:*</label>
@@ -155,19 +243,13 @@
                 <input type="text" id="nome_bozza" placeholder="Nome bozza">
                 <button type="button" id="salva-bozza-btn" class="btn-save" style="margin-left:8px;">Salva bozza</button>
             </div>
-            <div class="card-footer">
-                <button class="btn-back" type="button" onclick="window.history.back()">Indietro</button>
-                <button class="btn-next main-btn" type="submit">Avanti</button>
+             <div class="navigation-buttons">
+              <button type="button" onclick="window.history.back()">Indietro</button>
+              <button type="submit">Avanti</button>
             </div>
         </form>
     </div>
-    <footer class="main-footer">
-        © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#">Contatti</a>
-    </footer>
-    <script src="script.js"></script>
-    <!-- Altri script lasciati invariati -->
-</body>
-</html>
+    
     <script>
     // Mostra/nasconde sezioni energia/gas
     document.addEventListener('DOMContentLoaded', function() {
@@ -299,44 +381,11 @@
             });
         }
     });
+    
     </script>
-    <script>
-    document.getElementById('technicalForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        let technicalData = {};
-        technicalData.richiesta_elettrica = document.getElementById('richiesta_elettrica').checked;
-        if (technicalData.richiesta_elettrica) {
-            technicalData.dati_elettrici = {
-                tipo_richiesta: document.querySelector('input[name="tipo_richiesta_elettrica"]:checked')?.value || "",
-                data_attivazione: document.getElementById('data_attivazione_ee')?.value || "",
-                codice_pod_1: document.getElementById('codice_pod_1')?.value || "",
-                codice_pod_2: document.getElementById('codice_pod_2')?.value || "",
-                fornitore_uscente: document.getElementById('fornitore_uscente_ee')?.value || "",
-                consumo_annuo_kwh: document.getElementById('consumo-annuo')?.value || "",
-                potenza_impegnata: document.getElementById('potenza_impegnata_kw')?.value || "",
-                tipologia_uso: document.querySelector('input[name="tipologia_uso"]:checked')?.value || "",
-                nome_offerta: document.getElementById('nome_offerta_ee')?.value || "",
-                codice_offerta: document.getElementById('hidden_codice_offerta_ee')?.value || ""
-            };
-        }
-        technicalData.richiesta_gas = document.getElementById('richiesta_gas').checked;
-        if (technicalData.richiesta_gas) {
-            technicalData.dati_gas = {
-                tipo_richiesta: document.querySelector('input[name="tipo_richiesta_gas"]:checked')?.value || "",
-                data_attivazione: document.getElementById('data_attivazione_gas')?.value || "",
-                codice_pdr: document.getElementById('codice_pdr')?.value || "",
-                fornitore_uscente: document.getElementById('fornitore_uscente_gas')?.value || "",
-                consumo_annuo_smc: document.getElementById('consumo_annuo_smc')?.value || "",
-                remi: document.getElementById('remi')?.value || "",
-                categoria_uso: Array.from(document.querySelectorAll('input[name="categoria_uso_gas"]:checked')).map(cb => cb.value),
-                nome_offerta: document.getElementById('nome_offerta_gas')?.value || "",
-                codice_offerta: document.getElementById('hidden_codice_offerta_gas')?.value || ""
-            };
-        }
-        sessionStorage.setItem('technicalData', JSON.stringify(technicalData));
-        window.location.href = 'riepilogo.html';
-    });
-    </script>
+    <footer class="main-footer">
+        © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#">Contatti</a>
+    </footer>
     <script src="script.js"></script>
 </body>
 </html>

@@ -76,8 +76,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 provincia_residenza: document.getElementById('provincia_residenza') ? document.getElementById('provincia_residenza').value : "",
                 cellulare: document.getElementById('cellulare') ? document.getElementById('cellulare').value : "",
                 mail: document.getElementById('mail') ? document.getElementById('mail').value : "",
-            };
-
+                residente_fornitura: document.querySelector('input[name="residente_fornitura"]:checked') ? document.querySelector('input[name="residente_fornitura"]:checked').value : "",
+           };
+            
             if (fornituraCheckbox && fornituraCheckbox.checked) {
                 formData.fornitura_diversa = true;
                 formData.indirizzo_fornitura = document.getElementById('indirizzo_fornitura') ? document.getElementById('indirizzo_fornitura').value : "";

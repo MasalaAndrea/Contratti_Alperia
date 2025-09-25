@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             html += campo('Indirizzo Residenza:', `${customerData.indirizzo_residenza || ''}, ${customerData.n_residenza || ''}, ${customerData.cap_residenza || ''}, ${customerData.comune_residenza || ''}, ${customerData.provincia_residenza || ''}`);
             html += campo('Cellulare:', customerData.cellulare || '');
             html += campo('Mail:', customerData.mail || '');
+            html += campo('Residente presso la fornitura:', customerData.residente_fornitura === 'si' ? 'SI' : 'NO');
             if (customerData.fornitura_diversa) {
                 html += campo('Indirizzo Fornitura:', `${customerData.indirizzo_fornitura || ''}, ${customerData.n_fornitura || ''}, ${customerData.cap_fornitura || ''}, ${customerData.comune_fornitura || ''}, ${customerData.provincia_fornitura || ''}`);
             }
@@ -211,9 +212,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 formData.append('mail_cliente', localStorage.getItem('mail_cliente') || '');
 
                 const response = await fetch('https://contratti-alperia.onrender.com/generate-pdf', {
-                method: 'POST',
-                body: formData
-                });
+                 method: 'POST',
+                 body: formData
+               });
 
                 if (!response.ok) {
                     throw new Error('Errore invio PDF al backend');
@@ -255,6 +256,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             formContratto.getTextField('Prov').setText(customerData.provincia_residenza || '');
             formContratto.getTextField('Cellulare').setText(customerData.cellulare || '');
             formContratto.getTextField('E-mail').setText(customerData.mail || '');
+            if (customerData.residente_fornitura === 'si') {
+                formContratto.getCheckBox('Residente presso la fornitura_SI').check();
+             } else {
+                 formContratto.getCheckBox('Residente presso la fornitura_NO').check();
+          }
 
             if (customerData.fornitura_diversa) {
                 formContratto.getTextField('Indirizzo').setText(customerData.indirizzo_fornitura || '');

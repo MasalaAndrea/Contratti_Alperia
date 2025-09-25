@@ -67,7 +67,22 @@
                     <label for="mail">E-mail:*</label>
                     <input type="email" id="mail" name="mail" required>
                 </div>
-            </div>
+                <!-- INIZIO AGGIUNTA: Residente presso la fornitura -->
+                <div class="form-group">
+                    <label style="font-weight:500; color:#1c3664; margin-bottom:6px;">
+                        Residente presso la fornitura*
+                    </label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="residente_fornitura" value="si" id="residente_si" required>
+                            SI
+                        </label>
+                        <label>
+                            <input type="radio" name="residente_fornitura" value="no" id="residente_no">
+                            NO
+                        </label>
+                    </div>
+                </div>
             <div class="form-section">
                 <h3>Dati di Fornitura</h3>
                 <div class="checkbox-group">
@@ -99,8 +114,9 @@
                     </div>
                 </div>
             </div>
-            <div class="navigation-buttons" style="text-align:right;">
-                <button type="submit" class="main-btn">Avanti</button>
+             <div class="navigation-buttons">
+              <button type="button" onclick="window.history.back()">Indietro</button>
+              <button type="submit">Avanti</button>
             </div>
         </form>
     </div>

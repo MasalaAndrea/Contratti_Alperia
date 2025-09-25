@@ -21,13 +21,13 @@ app.get('/', (req, res) => {
 });
 
 // Nodemailer setup
+const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  host: 'sandbox.smtp.mailtrap.io',
+  port: 2525,
   auth: {
-    user: 'andreamasala1970@gmail.com',
-    pass: 'olwm wjfe hjyp dgzt'
+    user: '9d00d3667fb869', // <-- il tuo Nome utente Mailtrap
+    pass: 'Traduzione in FACD' // <-- la tua Parola d’ordine Mailtrap
   }
 });
 

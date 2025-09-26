@@ -72,8 +72,8 @@ app.post('/generate-pdf', upload.single('pdf'), async (req, res) => {
     await transporter.sendMail(mailOptions);
     res.json({ ok: true, message: 'PDF retail ricevuto e email inviata!' });
   } catch (err) {
-    console.error('Errore invio email retail:', err);
-    res.status(500).json({ error: 'Errore invio email retail.' });
+    console.error('Errore invio email:', err);
+    res.status(500).json({ error: 'Errore invio email retail.', details: err });
   }
 });
 
@@ -118,8 +118,8 @@ app.post('/generate-pdf-business', upload.single('pdf'), async (req, res) => {
     await transporter.sendMail(mailOptions);
     res.json({ ok: true, message: 'PDF business ricevuto e email inviata!' });
   } catch (err) {
-    console.error('Errore invio email business:', err);
-    res.status(500).json({ error: 'Errore invio email business.' });
+    console.error('Errore invio email:', err);
+    res.status(500).json({ error: 'Errore invio email business.', details: err });
   }
 });
 
@@ -190,8 +190,8 @@ app.post('/generate-pdf-base64', async (req, res) => {
     console.log("Email inviata!");
     res.json({ ok: true, message: 'PDF base64 ricevuto e email inviata!' });
   } catch (err) {
-    console.error('Errore invio email (base64):', err);
-    res.status(500).json({ error: 'Errore invio email base64.' });
+    console.error('Errore invio email:', err);
+    res.status(500).json({ error: 'Errore invio email base64.', details: err });
   }
 });
 

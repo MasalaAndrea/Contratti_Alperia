@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     mail_cliente: localStorage.getItem('mail_cliente') || '',
                 };
 
-                const response = await fetch('http://192.168.0.132:3000/generate-pdf-base64', {
+                const response = await fetch('https://contratti-alperia.onrender.com/generate-pdf-base64', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)

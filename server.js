@@ -120,6 +120,7 @@ app.post('/generate-pdf-business', upload.single('pdf'), async (req, res) => {
     const pdfBuffer = req.file.buffer;
     const filename = req.file.originalname || 'contratto-business.pdf';
 
+    console.log('DEBUG EMAIL MSG:', JSON.stringify(msg, null, 2));
     await inviaEmail(destinatario, mittente, ccList, oggetto, testo, pdfBuffer, filename);
     res.json({ ok: true, message: 'PDF business ricevuto e email inviata!' });
   } catch (err) {

@@ -1,11 +1,9 @@
-require('dotenv').config(); // <--- DOTENV PRIMA DI TUTTO!
-
 const express = require('express');
 const multer = require('multer');
+const nodemailer = require('nodemailer');
 const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
-const sgMail = require('@sendgrid/mail'); // <--- SendGrid
 const app = express();
 const upload = multer();
 
@@ -22,31 +20,16 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// --- SendGrid setup ---
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-// Funzione per invio email con allegato PDF
-async function inviaEmail(destinatario, mittente, ccList, oggetto, testo, pdfBuffer, filename) {
-  const msg = {
-    to: destinatario,
-    from: mittente, // deve essere verificato su SendGrid!
-    cc: ccList.length > 0 ? ccList : undefined,
-    subject: oggetto,
-    text: testo,
-    attachments: [
-      {
-        content: pdfBuffer.toString('base64'),
-        filename: filename || 'contratto.pdf',
-        type: 'application/pdf',
-        disposition: 'attachment'
-      }
-    ]
-  };
-
- console.log('DEBUG EMAIL MSG:', JSON.stringify(msg, null, 2));
-
-  await sgMail.send(msg);
-}
+// Nodemailer setup
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'andreamasala1970@gmail.com',
+    pass: 'olwm wjfe hjyp dgzt'
+  }
+});
 
 // Invio contratto Retail
 app.post('/generate-pdf', upload.single('pdf'), async (req, res) => {
@@ -74,14 +57,19 @@ app.post('/generate-pdf', upload.single('pdf'), async (req, res) => {
     if (mailCollaboratore) ccList.push(mailCollaboratore);
     if (mailCliente) ccList.push(mailCliente);
 
-    const destinatario = 'masalaenergia@outlook.it';
-    const mittente = 'andreamasala1970@gmail.com'; // deve essere verificata su SendGrid!
-    const oggetto = `Contratto Residenziale per ${nome} ${cognome}`;
-    const testo = `Ciao ${nome} ${cognome},\n\nIn allegato trovi il contratto Res. e la documentazione compilata.\n\nSaluti.`;
-    const pdfBuffer = req.file.buffer;
-    const filename = req.file.originalname || 'contratto-retail.pdf';
-
-    await inviaEmail(destinatario, mittente, ccList, oggetto, testo, pdfBuffer, filename);
+    const mailOptions = {
+      from: '"Contratti Energia" <andreamasala1970@gmail.com>',
+      to: 'masalaenergia@outlook.it',
+      cc: ccList.length > 0 ? ccList.join(',') : undefined,
+      subject: `Contratto Residenziale per ${nome} ${cognome}`,
+      text: `Ciao ${nome} ${cognome},\n\nIn allegato trovi il contratto Res. e la documentazione compilata.\n\nSaluti.`,
+      attachments: [{
+        filename: req.file.originalname || 'contratto-retail.pdf',
+        content: req.file.buffer,
+        contentType: 'application/pdf'
+      }]
+    };
+    await transporter.sendMail(mailOptions);
     res.json({ ok: true, message: 'PDF retail ricevuto e email inviata!' });
   } catch (err) {
     console.error('Errore invio email retail:', err);
@@ -115,14 +103,19 @@ app.post('/generate-pdf-business', upload.single('pdf'), async (req, res) => {
     if (mailCollaboratore) ccList.push(mailCollaboratore);
     if (mailCliente) ccList.push(mailCliente);
 
-    const destinatario = 'masalaenergia@outlook.it';
-    const mittente = 'andreamasala1970@gmail.com'; // deve essere verificata su SendGrid!
-    const oggetto = `Contratto Business per ${ragioneSociale} (P.IVA ${partitaIva})`;
-    const testo = `Ciao,\n\nIn allegato trovi il contratto BUSINESS compilato per ${ragioneSociale}.\n\nSaluti.`;
-    const pdfBuffer = req.file.buffer;
-    const filename = req.file.originalname || 'contratto-business.pdf';
-
-    await inviaEmail(destinatario, mittente, ccList, oggetto, testo, pdfBuffer, filename);
+    const mailOptions = {
+      from: '"Contratti Business" <andreamasala1970@gmail.com>',
+      to: 'masalaenergia@outlook.it',
+      cc: ccList.length > 0 ? ccList.join(',') : undefined,
+      subject: `Contratto Business per ${ragioneSociale} (P.IVA ${partitaIva})`,
+      text: `Ciao,\n\nIn allegato trovi il contratto BUSINESS compilato per ${ragioneSociale}.\n\nSaluti.`,
+      attachments: [{
+        filename: req.file.originalname || 'contratto-business.pdf',
+        content: req.file.buffer,
+        contentType: 'application/pdf'
+      }]
+    };
+    await transporter.sendMail(mailOptions);
     res.json({ ok: true, message: 'PDF business ricevuto e email inviata!' });
   } catch (err) {
     console.error('Errore invio email business:', err);
@@ -171,20 +164,29 @@ app.post('/generate-pdf-base64', async (req, res) => {
     if (mail_cliente) ccList.push(mail_cliente);
 
     // Imposta subject e testo
-    let oggetto = '';
-    let testo = '';
+    let subject = '';
+    let text = '';
     if (ragioneSociale) {
-      oggetto = `Contratto Business per ${ragioneSociale} (P.IVA ${partitaIva})`;
-      testo = `Ciao,\n\nIn allegato trovi il contratto BUSINESS compilato per ${ragioneSociale}.\n\nSaluti.`;
+      subject = `Contratto Business per ${ragioneSociale} (P.IVA ${partitaIva})`;
+      text = `Ciao,\n\nIn allegato trovi il contratto BUSINESS compilato per ${ragioneSociale}.\n\nSaluti.`;
     } else {
-      oggetto = `Contratto Residenziale per ${nome} ${cognome}`;
-      testo = `Ciao ${nome} ${cognome},\n\nIn allegato trovi il contratto Res. e la documentazione compilata.\n\nSaluti.`;
+      subject = `Contratto Residenziale per ${nome} ${cognome}`;
+      text = `Ciao ${nome} ${cognome},\n\nIn allegato trovi il contratto Res. e la documentazione compilata.\n\nSaluti.`;
     }
 
-    const destinatario = 'masalaenergia@outlook.it';
-    const mittente = 'andreamasala1970@gmail.com'; // deve essere verificata su SendGrid!
-
-    await inviaEmail(destinatario, mittente, ccList, oggetto, testo, pdfBuffer, filename);
+    const mailOptions = {
+      from: '"Contratti Energia" <andreamasala1970@gmail.com>',
+      to: 'masalaenergia@outlook.it',
+      cc: ccList.length > 0 ? ccList.join(',') : undefined,
+      subject: subject,
+      text: text,
+      attachments: [{
+        filename: filename || 'contratto.pdf',
+        content: pdfBuffer,
+        contentType: 'application/pdf'
+      }]
+    };
+    await transporter.sendMail(mailOptions);
     console.log("Email inviata!");
     res.json({ ok: true, message: 'PDF base64 ricevuto e email inviata!' });
   } catch (err) {

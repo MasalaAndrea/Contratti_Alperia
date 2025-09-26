@@ -1,9 +1,12 @@
+require('dotenv').config(); // Carica variabili da .env
+
 const express = require('express');
 const multer = require('multer');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
+
 const app = express();
 const upload = multer();
 
@@ -20,16 +23,9 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Nodemailer setup
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: 'andreamasala1970@gmail.com',
-    pass: 'gprz pttn vfwk emby' // App password
-  }
-});
+// RESEND setup
+const resend = new Resend(process.env.RESEND_API_KEY); // API KEY da variabile ambiente
+const mittente = 'noreply@masalaenergia.it'; // Dominio verificato Resend
 
 // Invio contratto Retail
 app.post('/generate-pdf', upload.single('pdf'), async (req, res) => {
@@ -57,10 +53,10 @@ app.post('/generate-pdf', upload.single('pdf'), async (req, res) => {
     if (mailCollaboratore) ccList.push(mailCollaboratore);
     if (mailCliente) ccList.push(mailCliente);
 
-    const mailOptions = {
-      from: '"Contratti Energia" <andreamasala1970@gmail.com>',
+    const emailOptions = {
+      from: mittente,
       to: 'masalaenergia@outlook.it',
-      cc: ccList.length > 0 ? ccList.join(',') : undefined,
+      cc: ccList.length > 0 ? ccList : undefined,
       subject: `Contratto Residenziale per ${nome} ${cognome}`,
       text: `Ciao ${nome} ${cognome},\n\nIn allegato trovi il contratto Res. e la documentazione compilata.\n\nSaluti.`,
       attachments: [{
@@ -69,7 +65,8 @@ app.post('/generate-pdf', upload.single('pdf'), async (req, res) => {
         contentType: 'application/pdf'
       }]
     };
-    await transporter.sendMail(mailOptions);
+
+    await resend.emails.send(emailOptions);
     res.json({ ok: true, message: 'PDF retail ricevuto e email inviata!' });
   } catch (err) {
     console.error('Errore invio email:', err);
@@ -103,10 +100,10 @@ app.post('/generate-pdf-business', upload.single('pdf'), async (req, res) => {
     if (mailCollaboratore) ccList.push(mailCollaboratore);
     if (mailCliente) ccList.push(mailCliente);
 
-    const mailOptions = {
-      from: '"Contratti Business" <andreamasala1970@gmail.com>',
+    const emailOptions = {
+      from: mittente,
       to: 'masalaenergia@outlook.it',
-      cc: ccList.length > 0 ? ccList.join(',') : undefined,
+      cc: ccList.length > 0 ? ccList : undefined,
       subject: `Contratto Business per ${ragioneSociale} (P.IVA ${partitaIva})`,
       text: `Ciao,\n\nIn allegato trovi il contratto BUSINESS compilato per ${ragioneSociale}.\n\nSaluti.`,
       attachments: [{
@@ -115,7 +112,8 @@ app.post('/generate-pdf-business', upload.single('pdf'), async (req, res) => {
         contentType: 'application/pdf'
       }]
     };
-    await transporter.sendMail(mailOptions);
+
+    await resend.emails.send(emailOptions);
     res.json({ ok: true, message: 'PDF business ricevuto e email inviata!' });
   } catch (err) {
     console.error('Errore invio email:', err);
@@ -174,10 +172,10 @@ app.post('/generate-pdf-base64', async (req, res) => {
       text = `Ciao ${nome} ${cognome},\n\nIn allegato trovi il contratto Res. e la documentazione compilata.\n\nSaluti.`;
     }
 
-    const mailOptions = {
-      from: '"Contratti Energia" <andreamasala1970@gmail.com>',
+    const emailOptions = {
+      from: mittente,
       to: 'masalaenergia@outlook.it',
-      cc: ccList.length > 0 ? ccList.join(',') : undefined,
+      cc: ccList.length > 0 ? ccList : undefined,
       subject: subject,
       text: text,
       attachments: [{
@@ -186,7 +184,7 @@ app.post('/generate-pdf-base64', async (req, res) => {
         contentType: 'application/pdf'
       }]
     };
-    await transporter.sendMail(mailOptions);
+    await resend.emails.send(emailOptions);
     console.log("Email inviata!");
     res.json({ ok: true, message: 'PDF base64 ricevuto e email inviata!' });
   } catch (err) {

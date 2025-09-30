@@ -343,3 +343,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     }
 });
+document.addEventListener('DOMContentLoaded', function() {
+    const contattiLink = document.getElementById('contatti-link');
+    const contattiModal = document.getElementById('contatti-modal');
+    const contattiClose = document.getElementById('contatti-close');
+
+    if (contattiLink && contattiModal && contattiClose) {
+        contattiLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            contattiModal.style.display = 'flex';
+        });
+        contattiClose.addEventListener('click', function() {
+            contattiModal.style.display = 'none';
+        });
+        window.addEventListener('click', function(event) {
+            if (event.target === contattiModal) {
+                contattiModal.style.display = 'none';
+            }
+        });
+    }
+});

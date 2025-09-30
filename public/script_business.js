@@ -78,6 +78,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         // ENERGIA
         if (technicalData.richiesta_elettrica && technicalData.dati_elettrici) {
             const nomeOffertaEE = getNomeOffertaBusiness(technicalData.dati_elettrici.codice_offerta, "energia", offerteBusiness);
+            const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
+            let tipoRichiestaEE = technicalData.dati_elettrici.tipo_richiesta || '';
+            if (!officialOptions.includes(tipoRichiestaEE)) {
+                tipoRichiestaEE = "Nessuna selezione";
+            }
             htmlContent += `
                 <h4>Energia Elettrica</h4>
                 <p><strong>Tipo Richiesta:</strong> ${technicalData.dati_elettrici.tipo_richiesta || ''}</p>
@@ -96,6 +101,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         // GAS
         if (technicalData.richiesta_gas && technicalData.dati_gas) {
             const nomeOffertaGas = getNomeOffertaBusiness(technicalData.dati_gas.codice_offerta, "gas", offerteBusiness);
+             const officialOptionsGas = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
+            let tipoRichiestaGas = technicalData.dati_gas.tipo_richiesta || '';
+            if (!officialOptionsGas.includes(tipoRichiestaGas)) {
+                tipoRichiestaGas = "Nessuna selezione";
+            }
             htmlContent += `
                 <h4>Gas Naturale</h4>
                 <p><strong>Tipo Richiesta:</strong> ${technicalData.dati_gas.tipo_richiesta || ''}</p>
@@ -173,11 +183,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             formData.append('mail_collaboratore', localStorage.getItem('mail_collaboratore') || '');
             formData.append('mail_cliente', localStorage.getItem('mail_cliente') || '');
 
-            const response = await fetch('https://contratti-alperia.onrender.com/generate-pdf-business', {
-             method: 'POST',
-             body: formData
-           });
+            // PATCH: uso variabile per ambiente locale/remoto
+            const API_BASE_URL = location.hostname === "localhost"
+                ? "http://localhost:3000"
+                : "https://contratti-alperia.onrender.com";
 
+            const response = await fetch(API_BASE_URL + '/generate-pdf-business', {
+                method: 'POST',
+                body: formData
+            });
+            console.log('Status fetch:', response.status, response.statusText);
+            
             if (!response.ok) {
                 throw new Error('Errore invio PDF business al backend');
             }
@@ -308,7 +324,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (paymentData.documento_identita.includes('Patente')) gruppoDocumenti.select('Patente');
                 if (paymentData.documento_identita.includes('Passaporto')) gruppoDocumenti.select('Passaporto');
             }
-
+                if (paymentData.consenso_obbligatorio) formContratto.getCheckBox('Presa Visione Informativa').check();
+                
             if (paymentData.consensi_commerciali) {
                 if (paymentData.consensi_commerciali.promozione) {
                     formContratto.getCheckBox('Consenso_Promozione').check();
@@ -431,7 +448,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (paymentData.firma) {
                     const signatureImageCTEG = await cteDocGas.embedPng(paymentData.firma);
                     const ctePagesGas = cteDocGas.getPages();
-                    const cteFirstPageGas = ctePagesGas[0];
+                    const cteFirstPageGas = cteDocGas.getPages()[0];
                     cteFirstPageGas.drawImage(signatureImageCTEG, {
                         x: 380.68,
                         y: 95.15,

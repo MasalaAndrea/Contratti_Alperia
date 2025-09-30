@@ -55,9 +55,6 @@
     </div>
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
     <script src="script_business.js"></script>
-    <footer class="main-footer">
-        © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#">Contatti</a>
-    </footer>
     <script>
     // RIEPILOGO BUSINESS - CARD COLORATE
     document.addEventListener('DOMContentLoaded', async () => {
@@ -170,5 +167,48 @@
         }
     });
     </script>
+...
+<footer class="main-footer">
+    © 2025 M-ENERGY | <a href="#">Privacy</a> | <a href="#" id="contatti-link">Contatti</a>
+</footer>
+<!-- MODAL CONTATTI -->
+<div id="contatti-modal" class="contatti-modal" style="display:none;">
+    <div class="contatti-modal-content">
+        <span class="contatti-close" id="contatti-close">&times;</span>
+        <h3>Contatti</h3>
+        <p><strong>Masala Andrea</strong></p>
+        <p>
+            <a href="https://masalaenergia.it" target="_blank">masalaenergia.it</a><br>
+            <a href="mailto:info@masalaenergia.it">info@masalaenergia.it</a>
+        </p>
+        <hr style="margin:18px 0 12px 0;">
+        <div class="contatti-version">
+            <span class="contatti-ver-ico">&#128187;</span>
+            <span>Ver 0.0.1</span>
+        </div>
+    </div>
+</div>
+<script src="script_business.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contattiLink = document.getElementById('contatti-link');
+    const contattiModal = document.getElementById('contatti-modal');
+    const contattiClose = document.getElementById('contatti-close');
+    if (contattiLink && contattiModal && contattiClose) {
+        contattiLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            contattiModal.style.display = 'flex';
+        });
+        contattiClose.addEventListener('click', function() {
+            contattiModal.style.display = 'none';
+        });
+        window.addEventListener('click', function(event) {
+            if (event.target === contattiModal) {
+                contattiModal.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
 </body>
 </html>

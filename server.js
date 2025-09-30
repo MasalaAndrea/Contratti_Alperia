@@ -29,8 +29,12 @@ const mittente = 'noreply@masalaenergia.it'; // Dominio verificato Resend
 
 // Invio contratto Retail
 app.post('/generate-pdf', upload.single('pdf'), async (req, res) => {
+  console.log("Entrato nella rotta /generate-pdf");
   try {
     if (!req.file) return res.status(400).json({ error: 'File PDF mancante' });
+
+    // Salva sempre il PDF su disco per debug
+    fs.writeFileSync('./debug-server-retail.pdf', req.file.buffer);
 
     // Recupera email collaboratore e cliente dalla richiesta
     const mailCollaboratore = req.body.mail_collaboratore;
@@ -58,7 +62,7 @@ app.post('/generate-pdf', upload.single('pdf'), async (req, res) => {
       to: 'masalaenergia@outlook.it',
       cc: ccList.length > 0 ? ccList : undefined,
       subject: `Contratto Residenziale per ${nome} ${cognome}`,
-      text: `Ciao ${nome} ${cognome},\n\nIn allegato trovi il contratto Res. e la documentazione compilata.\n\nSaluti.`,
+      text: `Ciao,\n\nIn allegato trovi il contratto RESIDENZIALE compilato per ${nome} ${cognome}.\n\nSaluti.`,
       attachments: [{
         filename: req.file.originalname || 'contratto-retail.pdf',
         content: req.file.buffer,
@@ -66,6 +70,7 @@ app.post('/generate-pdf', upload.single('pdf'), async (req, res) => {
       }]
     };
 
+    console.log("TESTO EMAIL INVIATO (RETAIL):", emailOptions.text);
     await resend.emails.send(emailOptions);
     res.json({ ok: true, message: 'PDF retail ricevuto e email inviata!' });
   } catch (err) {
@@ -76,8 +81,12 @@ app.post('/generate-pdf', upload.single('pdf'), async (req, res) => {
 
 // Invio contratto Business
 app.post('/generate-pdf-business', upload.single('pdf'), async (req, res) => {
+  console.log("Entrato nella rotta /generate-pdf");
   try {
     if (!req.file) return res.status(400).json({ error: 'File PDF mancante' });
+
+    // Salva sempre il PDF su disco per debug
+    fs.writeFileSync('./debug-server-business.pdf', req.file.buffer);
 
     // Recupera email collaboratore e cliente dalla richiesta
     const mailCollaboratore = req.body.mail_collaboratore;
@@ -113,6 +122,7 @@ app.post('/generate-pdf-business', upload.single('pdf'), async (req, res) => {
       }]
     };
 
+    console.log("TESTO EMAIL INVIATO (BUSINESS):", emailOptions.text);
     await resend.emails.send(emailOptions);
     res.json({ ok: true, message: 'PDF business ricevuto e email inviata!' });
   } catch (err) {
@@ -135,9 +145,8 @@ app.post('/generate-pdf-base64', async (req, res) => {
     const pdfBuffer = Buffer.from(pdf_base64, 'base64');
     console.log("Buffer PDF creato, lunghezza:", pdfBuffer.length);
 
-    // Per ulteriore debug, salva sempre un file temporaneo
-    fs.writeFileSync('./debug.pdf', pdfBuffer);
-    console.log("PDF salvato come debug.pdf");
+    // Salva sempre il PDF su disco per debug
+    fs.writeFileSync('./debug-server-base64.pdf', pdfBuffer);
 
     // Recupera dati cliente (per retail) o azienda (per business)
     let datiCliente = {};
@@ -161,7 +170,7 @@ app.post('/generate-pdf-base64', async (req, res) => {
     if (mail_collaboratore) ccList.push(mail_collaboratore);
     if (mail_cliente) ccList.push(mail_cliente);
 
-    // Imposta subject e testo
+    // Imposta subject e testo -- PATCH UNIFORME
     let subject = '';
     let text = '';
     if (ragioneSociale) {
@@ -169,7 +178,7 @@ app.post('/generate-pdf-base64', async (req, res) => {
       text = `Ciao,\n\nIn allegato trovi il contratto BUSINESS compilato per ${ragioneSociale}.\n\nSaluti.`;
     } else {
       subject = `Contratto Residenziale per ${nome} ${cognome}`;
-      text = `Ciao ${nome} ${cognome},\n\nIn allegato trovi il contratto Res. e la documentazione compilata.\n\nSaluti.`;
+      text = `Ciao,\n\nIn allegato trovi il contratto RESIDENZIALE compilato per ${nome} ${cognome}.\n\nSaluti.`;
     }
 
     const emailOptions = {
@@ -184,6 +193,7 @@ app.post('/generate-pdf-base64', async (req, res) => {
         contentType: 'application/pdf'
       }]
     };
+    console.log("TESTO EMAIL INVIATO (BASE64):", emailOptions.text);
     await resend.emails.send(emailOptions);
     console.log("Email inviata!");
     res.json({ ok: true, message: 'PDF base64 ricevuto e email inviata!' });

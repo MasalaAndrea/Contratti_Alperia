@@ -79,7 +79,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (technicalData.richiesta_elettrica && technicalData.dati_elettrici) {
                 const nomeOffertaEE = await getNomeOfferta(technicalData.dati_elettrici.codice_offerta, "energia");
                 html += `<div style="margin-bottom: 12px; font-weight:bold; color:#115890;">Energia Elettrica</div>`;
-                html += campo('Tipo Richiesta:', technicalData.dati_elettrici.tipo_richiesta || '');
+                const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
+                let tipoRichiestaEE = technicalData.dati_elettrici.tipo_richiesta || '';
+             if (!officialOptions.includes(tipoRichiestaEE)) {
+                tipoRichiestaEE = "Nessuna selezione";
+                }
+html += campo('Tipo Richiesta:', tipoRichiestaEE);
                 html += campo('Data Attivazione:', formattaData(technicalData.dati_elettrici.data_attivazione) || '');
                 html += campo('Codice POD:', [technicalData.dati_elettrici.codice_pod_1, technicalData.dati_elettrici.codice_pod_2].filter(Boolean).join(' ') || '');
                 html += campo('Fornitore Uscente:', technicalData.dati_elettrici.fornitore_uscente || '');
@@ -92,7 +97,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (technicalData.richiesta_gas && technicalData.dati_gas) {
                 const nomeOffertaGas = await getNomeOfferta(technicalData.dati_gas.codice_offerta, "gas");
                 html += `<div style="margin-bottom: 12px; font-weight:bold; color:#c45a13;">Gas Naturale</div>`;
-                html += campo('Tipo Richiesta:', technicalData.dati_gas.tipo_richiesta || '');
+                const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
+                let tipoRichiestaGas = technicalData.dati_gas.tipo_richiesta || '';
+                if (!officialOptions.includes(tipoRichiestaGas)) {
+                    tipoRichiestaGas = "Nessuna selezione";
+                }
+                html += campo('Tipo Richiesta:', tipoRichiestaGas);
                 html += campo('Data Attivazione:', formattaData(technicalData.dati_gas.data_attivazione) || '');
                 html += campo('Codice PDR:', technicalData.dati_gas.codice_pdr || '');
                 html += campo('Fornitore Uscente:', technicalData.dati_gas.fornitore_uscente || '');
@@ -211,11 +221,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 formData.append('mail_collaboratore', localStorage.getItem('mail_collaboratore') || '');
                 formData.append('mail_cliente', localStorage.getItem('mail_cliente') || '');
 
-                const response = await fetch('https://contratti-alperia.onrender.com/generate-pdf', {
-                 method: 'POST',
-                 body: formData
-               });
+                const API_BASE_URL = location.hostname === "localhost"
+                  ? "http://localhost:3000"
+                  : "https://contratti-alperia.onrender.com"
 
+                const response = await fetch(API_BASE_URL + '/generate-pdf', {
+                     method: 'POST',
+                     body: formData
+          });
                 if (!response.ok) {
                     throw new Error('Errore invio PDF al backend');
                 }

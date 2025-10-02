@@ -5,76 +5,81 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const ctx = canvas.getContext('2d');
     const clearButton = document.getElementById('clear-firma');
-    let isDrawing = false;
-    let lastX = 0;
-    let lastY = 0;
 
-    // Configura lo stile di disegno
+    // --- GESTIONE RETINA / PIXEL RATIO ---
+    function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+    }
+
+    const ctx = canvas.getContext('2d');
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    function draw(e) {
-        if (!isDrawing) return;
-        
-        let clientX, clientY;
-        if (e.touches) {
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    function getRelativePosition(e) {
+        const rect = canvas.getBoundingClientRect();
+        let clientX = e.clientX, clientY = e.clientY;
+        // Per compatibilità: se è un event touch (alcuni browser vecchi)
+        if (typeof e.touches !== "undefined" && e.touches.length) {
             clientX = e.touches[0].clientX;
             clientY = e.touches[0].clientY;
-        } else {
-            clientX = e.clientX;
-            clientY = e.clientY;
         }
+        return [clientX - rect.left, clientY - rect.top];
+    }
 
-        const rect = canvas.getBoundingClientRect();
-        const currentX = clientX - rect.left;
-        const currentY = clientY - rect.top;
-
+    function draw(e) {
+        if (!isDrawing) return;
+        const [currentX, currentY] = getRelativePosition(e);
         ctx.beginPath();
         ctx.moveTo(lastX, lastY);
         ctx.lineTo(currentX, currentY);
         ctx.stroke();
-        
         [lastX, lastY] = [currentX, currentY];
+        e.preventDefault && e.preventDefault();
     }
 
     function handleStart(e) {
         isDrawing = true;
-        const rect = canvas.getBoundingClientRect();
-        let clientX, clientY;
-        if (e.touches) {
-            clientX = e.touches[0].clientX;
-            clientY = e.touches[0].clientY;
-        } else {
-            clientX = e.clientX;
-            clientY = e.clientY;
-        }
-        [lastX, lastY] = [clientX - rect.left, clientY - rect.top];
-        e.preventDefault();
+        [lastX, lastY] = getRelativePosition(e);
+        e.preventDefault && e.preventDefault();
     }
 
-    function handleEnd() {
+    function handleEnd(e) {
         isDrawing = false;
+        e && e.preventDefault && e.preventDefault();
     }
 
     function clearCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
-    
-    // Eventi per mouse
-    canvas.addEventListener('mousedown', handleStart);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', handleEnd);
-    canvas.addEventListener('mouseout', handleEnd);
-    
-    // Eventi per touch
-    canvas.addEventListener('touchstart', handleStart);
-    canvas.addEventListener('touchmove', draw);
-    canvas.addEventListener('touchend', handleEnd);
-    
+
+    // Pointer Events (mouse, touch, pen) - con passive:false per fluidità su mobile
+    canvas.addEventListener('pointerdown', handleStart, {passive: false});
+    canvas.addEventListener('pointermove', draw, {passive: false});
+    canvas.addEventListener('pointerup', handleEnd, {passive: false});
+    canvas.addEventListener('pointerout', handleEnd, {passive: false});
+    canvas.addEventListener('pointercancel', handleEnd, {passive: false});
+
+    // Previeni scroll su tutto il canvas mentre si disegna (importante per iOS e Android)
+    canvas.addEventListener('touchstart', e => { if (isDrawing) e.preventDefault(); }, {passive: false});
+    canvas.addEventListener('touchmove', e => { if (isDrawing) e.preventDefault(); }, {passive: false});
+
     // Pulsante per cancellare
-    clearButton.addEventListener('click', clearCanvas);
+    if (clearButton) {
+        clearButton.addEventListener('click', clearCanvas);
+    }
 });

@@ -23,5 +23,12 @@ self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => response || fetch(event.request))
+      .catch(() => {
+        return new Response("Offline o file non trovato", {
+          status: 503,
+          statusText: "Service Unavailable",
+          headers: { "Content-Type": "text/html" }
+        });
+      })
   );
 });

@@ -43,25 +43,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function generaRiepilogoHTML() {
         if (!riepilogoContainer) return;
         let htmlContent = '<h3>Dati Azienda / Cliente Business</h3>';
-        htmlContent += `
-            <p><strong>Ragione Sociale:</strong> ${aziendaData.ragione_sociale || ''}</p>
-            <p><strong>Partita IVA:</strong> ${aziendaData.partita_iva || ''}</p>
-            <p><strong>Codice Fiscale Azienda:</strong> ${aziendaData.codice_fiscale_azienda || ''}</p>
-            <p><strong>Indirizzo Sede Legale:</strong> ${aziendaData.indirizzo_sede || ''}, N. ${aziendaData.n_sede || ''}</p>
-            <p><strong>Comune:</strong> ${aziendaData.comune_sede || ''}</p>
-            <p><strong>Provincia:</strong> ${aziendaData.provincia_sede || ''}</p>
-            <p><strong>CAP:</strong> ${aziendaData.cap_sede || ''}</p>
-            <p><strong>Email:</strong> ${aziendaData.email_azienda || ''}</p>
-            <p><strong>PEC:</strong> ${aziendaData.pec || ''}</p>
-            <p><strong>Telefono:</strong> ${aziendaData.telefono || ''}</p>
-            <p><strong>Cell:</strong> ${aziendaData.cell || ''}</p>
-            <p><strong>Codice SDI:</strong> ${aziendaData.codice_sdi || ''}</p>
-            <h4>Dati Rappresentante Legale</h4>
-            <p><strong>Cognome:</strong> ${aziendaData.rapp_cognome || ''}</p>
-            <p><strong>Nome:</strong> ${aziendaData.rapp_nome || ''}</p>
-            <p><strong>Codice Fiscale:</strong> ${aziendaData.rapp_codice_fiscale || ''}</p>
-            <p><strong>Documento Identità:</strong> ${aziendaData.documento_identita || ''}</p>
-        `;
+        // ENERGIA
+        if (technicalData.richiesta_elettrica && technicalData.dati_elettrici) {
+            const nomeOffertaEE = getNomeOffertaBusiness(technicalData.dati_elettrici.codice_offerta, "energia", offerteBusiness);
+            const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
+            let tipoRichiestaEE = technicalData.dati_elettrici.tipo_richiesta || '';
+            if (!officialOptions.includes(tipoRichiestaEE)) {
+                tipoRichiestaEE = "Nessuna selezione";
+            }
+            // MODIFICA: normalizza la virgola in punto
+            let potenzaImpegnata = technicalData.dati_elettrici.potenza_impegnata || '';
+            potenzaImpegnata = typeof potenzaImpegnata === "string" ? potenzaImpegnata.replace(',', '.') : potenzaImpegnata;
+            htmlContent += `
+                <h4>Energia Elettrica</h4>
+                <p><strong>Tipo Richiesta:</strong> ${technicalData.dati_elettrici.tipo_richiesta || ''}</p>
+                <p><strong>Data Attivazione:</strong> ${formattaData(technicalData.dati_elettrici.data_attivazione) || ''}</p>
+                <p><strong>Codice POD:</strong> IT${technicalData.dati_elettrici.codice_pod_1 || ''}E${technicalData.dati_elettrici.codice_pod_2 || ''}</p>
+                <p><strong>Fornitore Uscente:</strong> ${technicalData.dati_elettrici.fornitore_uscente || ''}</p>
+                <p><strong>Consumo Annuo (kWh):</strong> ${technicalData.dati_elettrici.consumo_annuo_kwh || ''}</p>
+                <p><strong>Potenza Impegnata (kW):</strong> ${potenzaImpegnata}</p>
+                <p><strong>Tipologia Uso:</strong> ${technicalData.dati_elettrici.tipologia_uso || ''}</p>
+                <p><strong>Tensione:</strong> ${technicalData.dati_elettrici.tensione || ''}</p>
+                <p><strong>Nome Offerta:</strong> ${nomeOffertaEE || technicalData.dati_elettrici.nome_offerta || ''}</p>
+                <p><strong>Codice Offerta:</strong> ${technicalData.dati_elettrici.codice_offerta || ''}</p>
+            `;
+        }
         htmlContent += `
             <h4>Sede di Fornitura</h4>
             ${aziendaData.sede_fornitura === 'diversa'

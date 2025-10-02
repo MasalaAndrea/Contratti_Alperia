@@ -73,48 +73,51 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- CARD DATI TECNICI ---
     async function renderCardTecnici() {
-        if (!cardTecnici) return;
-        let html = titoloCard('Dati Tecnici di Fornitura');
-        if (technicalData) {
-            if (technicalData.richiesta_elettrica && technicalData.dati_elettrici) {
-                const nomeOffertaEE = await getNomeOfferta(technicalData.dati_elettrici.codice_offerta, "energia");
-                html += `<div style="margin-bottom: 12px; font-weight:bold; color:#115890;">Energia Elettrica</div>`;
-                const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
-                let tipoRichiestaEE = technicalData.dati_elettrici.tipo_richiesta || '';
-             if (!officialOptions.includes(tipoRichiestaEE)) {
+    if (!cardTecnici) return;
+    let html = titoloCard('Dati Tecnici di Fornitura');
+    if (technicalData) {
+        if (technicalData.richiesta_elettrica && technicalData.dati_elettrici) {
+            const nomeOffertaEE = await getNomeOfferta(technicalData.dati_elettrici.codice_offerta, "energia");
+            html += `<div style="margin-bottom: 12px; font-weight:bold; color:#115890;">Energia Elettrica</div>`;
+            const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
+            let tipoRichiestaEE = technicalData.dati_elettrici.tipo_richiesta || '';
+            if (!officialOptions.includes(tipoRichiestaEE)) {
                 tipoRichiestaEE = "Nessuna selezione";
-                }
-html += campo('Tipo Richiesta:', tipoRichiestaEE);
-                html += campo('Data Attivazione:', formattaData(technicalData.dati_elettrici.data_attivazione) || '');
-                html += campo('Codice POD:', [technicalData.dati_elettrici.codice_pod_1, technicalData.dati_elettrici.codice_pod_2].filter(Boolean).join(' ') || '');
-                html += campo('Fornitore Uscente:', technicalData.dati_elettrici.fornitore_uscente || '');
-                html += campo('Consumo annuo (kWh):', technicalData.dati_elettrici.consumo_annuo_kwh || '');
-                html += campo('Potenza Impegnata (kW):', technicalData.dati_elettrici.potenza_impegnata || '');
-                html += campo('Tipologia Uso:', technicalData.dati_elettrici.tipologia_uso || '');
-                html += campo('Nome Offerta:', nomeOffertaEE || technicalData.dati_elettrici.nome_offerta || '');
-                html += campo('Codice Offerta:', technicalData.dati_elettrici.codice_offerta || '');
             }
-            if (technicalData.richiesta_gas && technicalData.dati_gas) {
-                const nomeOffertaGas = await getNomeOfferta(technicalData.dati_gas.codice_offerta, "gas");
-                html += `<div style="margin-bottom: 12px; font-weight:bold; color:#c45a13;">Gas Naturale</div>`;
-                const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
-                let tipoRichiestaGas = technicalData.dati_gas.tipo_richiesta || '';
-                if (!officialOptions.includes(tipoRichiestaGas)) {
-                    tipoRichiestaGas = "Nessuna selezione";
-                }
-                html += campo('Tipo Richiesta:', tipoRichiestaGas);
-                html += campo('Data Attivazione:', formattaData(technicalData.dati_gas.data_attivazione) || '');
-                html += campo('Codice PDR:', technicalData.dati_gas.codice_pdr || '');
-                html += campo('Fornitore Uscente:', technicalData.dati_gas.fornitore_uscente || '');
-                html += campo('Consumo annuo (smc):', technicalData.dati_gas.consumo_annuo_smc || '');
-                html += campo('REMI:', technicalData.dati_gas.remi || '');
-                html += campo('Categoria Uso:', (technicalData.dati_gas.categoria_uso && technicalData.dati_gas.categoria_uso.join(', ')) || '');
-                html += campo('Nome Offerta:', nomeOffertaGas || technicalData.dati_gas.nome_offerta || '');
-                html += campo('Codice Offerta:', technicalData.dati_gas.codice_offerta || '');
-            }
+            // MODIFICA: visualizza sempre il valore normalizzato (virgola > punto)
+            let potenzaImpegnata = technicalData.dati_elettrici.potenza_impegnata || '';
+            potenzaImpegnata = typeof potenzaImpegnata === "string" ? potenzaImpegnata.replace(',', '.') : potenzaImpegnata;
+            html += campo('Tipo Richiesta:', tipoRichiestaEE);
+            html += campo('Data Attivazione:', formattaData(technicalData.dati_elettrici.data_attivazione) || '');
+            html += campo('Codice POD:', [technicalData.dati_elettrici.codice_pod_1, technicalData.dati_elettrici.codice_pod_2].filter(Boolean).join(' ') || '');
+            html += campo('Fornitore Uscente:', technicalData.dati_elettrici.fornitore_uscente || '');
+            html += campo('Consumo annuo (kWh):', technicalData.dati_elettrici.consumo_annuo_kwh || '');
+            html += campo('Potenza Impegnata (kW):', potenzaImpegnata);
+            html += campo('Tipologia Uso:', technicalData.dati_elettrici.tipologia_uso || '');
+            html += campo('Nome Offerta:', nomeOffertaEE || technicalData.dati_elettrici.nome_offerta || '');
+            html += campo('Codice Offerta:', technicalData.dati_elettrici.codice_offerta || '');
         }
-        cardTecnici.innerHTML = html;
+        if (technicalData.richiesta_gas && technicalData.dati_gas) {
+            const nomeOffertaGas = await getNomeOfferta(technicalData.dati_gas.codice_offerta, "gas");
+            html += `<div style="margin-bottom: 12px; font-weight:bold; color:#c45a13;">Gas Naturale</div>`;
+            const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
+            let tipoRichiestaGas = technicalData.dati_gas.tipo_richiesta || '';
+            if (!officialOptions.includes(tipoRichiestaGas)) {
+                tipoRichiestaGas = "Nessuna selezione";
+            }
+            html += campo('Tipo Richiesta:', tipoRichiestaGas);
+            html += campo('Data Attivazione:', formattaData(technicalData.dati_gas.data_attivazione) || '');
+            html += campo('Codice PDR:', technicalData.dati_gas.codice_pdr || '');
+            html += campo('Fornitore Uscente:', technicalData.dati_gas.fornitore_uscente || '');
+            html += campo('Consumo annuo (smc):', technicalData.dati_gas.consumo_annuo_smc || '');
+            html += campo('REMI:', technicalData.dati_gas.remi || '');
+            html += campo('Categoria Uso:', (technicalData.dati_gas.categoria_uso && technicalData.dati_gas.categoria_uso.join(', ')) || '');
+            html += campo('Nome Offerta:', nomeOffertaGas || technicalData.dati_gas.nome_offerta || '');
+            html += campo('Codice Offerta:', technicalData.dati_gas.codice_offerta || '');
+        }
     }
+    cardTecnici.innerHTML = html;
+}
 
     // --- CARD PAGAMENTO E CONSENSI ---
     function renderCardConsensi() {

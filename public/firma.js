@@ -35,11 +35,7 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
     }
 
     function resizeCanvas() {
-        // Salva la firma solo se NON si sta disegnando
-        if (!isDrawing && canvas.width > 0 && canvas.height > 0) {
-            // console.log("Salvo firmaDataUrl");
-            firmaDataUrl = canvas.toDataURL();
-        }
+        // NON salvare la firma qui: Chrome potrebbe aver già azzerato il canvas!
         // Ridimensiona il canvas
         const dpr = window.devicePixelRatio || 1;
         const rect = canvas.getBoundingClientRect();
@@ -103,7 +99,7 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
 
     function handleEnd(e) {
         isDrawing = false;
-        // Salva la firma dopo aver disegnato/completato il tratto
+        // Salva la firma dopo ogni tratto, così è pronta per essere ripristinata dopo la rotazione
         firmaDataUrl = canvas.toDataURL();
 
         if (overlay) overlay.style.display = 'none';

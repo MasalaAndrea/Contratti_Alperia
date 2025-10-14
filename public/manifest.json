@@ -5,6 +5,7 @@
   "display": "standalone",
   "background_color": "#ffffff",
   "description": "App per la gestione contratti Alperia",
+  "orientation": "any",
   "icons": [
     {
       "src": "icon-192x192.png",

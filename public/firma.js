@@ -30,28 +30,45 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
     }
 
     function resizeCanvas() {
+    // 1. Salva il contenuto corrente del canvas (firma) come immagine solo se c'è qualcosa
+    let dataUrl = null;
+    if (canvas.width > 0 && canvas.height > 0) {
+        dataUrl = canvas.toDataURL();
+    }
+
+    // 2. Ridimensiona il canvas
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
+
+    // 3. Ripristina la firma dopo il resize
+    if (dataUrl) {
+        const img = new window.Image();
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
+        };
+        img.src = dataUrl;
+    }
 }
+
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('orientationchange', resizeCanvas);
 
-    const ctx = canvas.getContext('2d');
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+// ... resto del tuo codice ...
+const ctx = canvas.getContext('2d');
+resizeCanvas();
 
-    ctx.strokeStyle = '#000000'; // nero pieno
-    ctx.lineWidth = lineWidth;   // personalizzabile (default 5)
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+ctx.strokeStyle = '#000000'; // nero pieno
+ctx.lineWidth = lineWidth;   // personalizzabile (default 5)
+ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
 
-    let isDrawing = false;
-    let lastX = 0;
-    let lastY = 0;
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
 
     function getRelativePosition(e) {
         const rect = canvas.getBoundingClientRect();

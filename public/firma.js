@@ -1,6 +1,4 @@
 // Funzione di init firma su un canvas con clear button + overlay blocco esterno
-// Ora puoi specificare lo spessore della penna (lineWidth) come terzo parametro opzionale
-
 function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) {
@@ -8,11 +6,15 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         return;
     }
     const clearButton = document.getElementById(clearButtonId);
+    const ctx = canvas.getContext('2d');
 
-    // Variabile globale per salvare la firma
+    // Variabile globale per tenere la firma tra i resize
     let firmaDataUrl = null;
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
 
-    // Crea l'overlay una sola volta per pagina
+    // Crea overlay una sola volta
     let overlay = document.getElementById('firma-overlay');
     if (!overlay) {
         overlay = document.createElement('div');
@@ -22,22 +24,20 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         overlay.style.left = 0;
         overlay.style.width = '100vw';
         overlay.style.height = '100vh';
-        overlay.style.background = 'rgba(0,0,0,0.02)'; // quasi invisibile
+        overlay.style.background = 'rgba(0,0,0,0.02)';
         overlay.style.zIndex = 10000;
         overlay.style.display = 'none';
         overlay.style.touchAction = 'none';
         overlay.style.userSelect = 'none';
-        // Previeni tutto fuori dal canvas!
         overlay.addEventListener('pointerdown', (e) => e.preventDefault());
         overlay.addEventListener('touchstart', (e) => e.preventDefault());
         document.body.appendChild(overlay);
     }
 
-    const ctx = canvas.getContext('2d');
-
     function resizeCanvas() {
-        // Salva il contenuto solo se il canvas non è vuoto e non si sta disegnando
-        if (canvas.width > 0 && canvas.height > 0 && !isDrawing) {
+        // Salva la firma solo se NON si sta disegnando
+        if (!isDrawing && canvas.width > 0 && canvas.height > 0) {
+            // console.log("Salvo firmaDataUrl");
             firmaDataUrl = canvas.toDataURL();
         }
         // Ridimensiona il canvas
@@ -48,7 +48,7 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr, dpr);
 
-        // Ripristina la firma dopo il resize
+        // Ripristina la firma, se c'è
         if (firmaDataUrl) {
             const img = new window.Image();
             img.onload = function() {
@@ -61,16 +61,13 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
     window.addEventListener('resize', resizeCanvas);
     window.addEventListener('orientationchange', resizeCanvas);
 
+    // Inizializza canvas
     resizeCanvas();
 
-    ctx.strokeStyle = '#000000'; // nero pieno
-    ctx.lineWidth = lineWidth;   // personalizzabile (default 5)
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = lineWidth;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-
-    let isDrawing = false;
-    let lastX = 0;
-    let lastY = 0;
 
     function getRelativePosition(e) {
         const rect = canvas.getBoundingClientRect();
@@ -97,30 +94,26 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         isDrawing = true;
         [lastX, lastY] = getRelativePosition(e);
 
-        // Mostra overlay sopra tutto
-        if (overlay) {
-            overlay.style.display = 'block';
-        }
-        // Porta il canvas sopra l'overlay
+        // Overlay sopra tutto
+        if (overlay) overlay.style.display = 'block';
         canvas.style.position = 'relative';
         canvas.style.zIndex = 10001;
-
         e.preventDefault && e.preventDefault();
     }
 
     function handleEnd(e) {
         isDrawing = false;
-        // Nascondi l'overlay
-        if (overlay) {
-            overlay.style.display = 'none';
-        }
+        // Salva la firma dopo aver disegnato/completato il tratto
+        firmaDataUrl = canvas.toDataURL();
+
+        if (overlay) overlay.style.display = 'none';
         canvas.style.zIndex = '';
         e && e.preventDefault && e.preventDefault();
     }
 
     function clearCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        firmaDataUrl = null; // cancella anche la copia "salvata"
+        firmaDataUrl = null;
     }
 
     // Pointer Events (mouse, touch, pen)
@@ -147,5 +140,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // La firma SDD sarà inizializzata dinamicamente dal codice della pagina (come già avviene),
     // ma ora puoi passarle anche lo spessore desiderato (es: 5 o quello che preferisci):
     // Esempio: window.initFirmaPad('firma-debitore-sdd-pad', 'clear-firma-debitore-sdd', 7);
-    // (vedi script inline in pagina3.html)
 });

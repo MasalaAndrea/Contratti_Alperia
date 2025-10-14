@@ -1,5 +1,6 @@
 // Funzione di init firma su un canvas con clear button + overlay blocco esterno
 // Ora puoi specificare lo spessore della penna (lineWidth) come terzo parametro opzionale
+
 function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) {
@@ -7,6 +8,9 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         return;
     }
     const clearButton = document.getElementById(clearButtonId);
+
+    // Variabile globale per salvare la firma
+    let firmaDataUrl = null;
 
     // Crea l'overlay una sola volta per pagina
     let overlay = document.getElementById('firma-overlay');
@@ -29,46 +33,44 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         document.body.appendChild(overlay);
     }
 
+    const ctx = canvas.getContext('2d');
+
     function resizeCanvas() {
-    // 1. Salva il contenuto corrente del canvas (firma) come immagine solo se c'è qualcosa
-    let dataUrl = null;
-    if (canvas.width > 0 && canvas.height > 0) {
-        dataUrl = canvas.toDataURL();
+        // Salva il contenuto solo se il canvas non è vuoto e non si sta disegnando
+        if (canvas.width > 0 && canvas.height > 0 && !isDrawing) {
+            firmaDataUrl = canvas.toDataURL();
+        }
+        // Ridimensiona il canvas
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+
+        // Ripristina la firma dopo il resize
+        if (firmaDataUrl) {
+            const img = new window.Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
+            };
+            img.src = firmaDataUrl;
+        }
     }
 
-    // 2. Ridimensiona il canvas
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', resizeCanvas);
 
-    // 3. Ripristina la firma dopo il resize
-    if (dataUrl) {
-        const img = new window.Image();
-        img.onload = function() {
-            ctx.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
-        };
-        img.src = dataUrl;
-    }
-}
+    resizeCanvas();
 
-window.addEventListener('resize', resizeCanvas);
-window.addEventListener('orientationchange', resizeCanvas);
+    ctx.strokeStyle = '#000000'; // nero pieno
+    ctx.lineWidth = lineWidth;   // personalizzabile (default 5)
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
 
-// ... resto del tuo codice ...
-const ctx = canvas.getContext('2d');
-resizeCanvas();
-
-ctx.strokeStyle = '#000000'; // nero pieno
-ctx.lineWidth = lineWidth;   // personalizzabile (default 5)
-ctx.lineCap = 'round';
-ctx.lineJoin = 'round';
-
-let isDrawing = false;
-let lastX = 0;
-let lastY = 0;
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
 
     function getRelativePosition(e) {
         const rect = canvas.getBoundingClientRect();
@@ -118,7 +120,7 @@ let lastY = 0;
 
     function clearCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-       
+        firmaDataUrl = null; // cancella anche la copia "salvata"
     }
 
     // Pointer Events (mouse, touch, pen)

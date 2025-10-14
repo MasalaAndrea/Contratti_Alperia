@@ -151,11 +151,11 @@
                 <div class="form-group-doppio">
                     <div class="form-group">
                        <label for="consumo_annuo_kwh">Consumo annuo (kWh):*</label>
-                     <input type="number" id="consumo_annuo_kwh" name="consumo_annuo_kwh" placeholder="Es. 3200" required>
+                     <input type="number" id="consumo_annuo_kwh" name="consumo_annuo_kwh" placeholder="Es. 3200" class="energia-obbligatoria">
                     </div>
                     <div class="form-group">
                         <label for="potenza_impegnata_kw">Potenza Impegnata (kW):*</label>
-                        <input type="text" id="potenza_impegnata_kw" name="potenza_impegnata_kw" class="energia-obbligatoria" required pattern="[\d.,]+" inputmode="decimal">
+                        <input type="text" id="potenza_impegnata_kw" name="potenza_impegnata_kw" class="energia-obbligatoria" pattern="[\d.,]+" inputmode="decimal">
                     </div>
                 </div>
                 <div class="form-group">
@@ -210,7 +210,7 @@
                 <div class="form-group-doppio">
                     <div class="form-group">
                         <label for="consumo_annuo_smc">Consumo Annuo (smc):*</label>
-                        <input type="number" id="consumo_annuo_smc" name="consumo_annuo_smc" class="gas-obbligatoria" required>
+                        <input type="number" id="consumo_annuo_smc" name="consumo_annuo_smc" class="gas-obbligatoria">
                     </div>
                     <div class="form-group">
                         <label for="remi">REMI* (8 caratteri):</label>
@@ -246,22 +246,48 @@
                 <button type="button" id="salva-bozza-btn" class="btn-save" style="margin-left:8px;">Salva bozza</button>
             </div>
              <div class="navigation-buttons">
-              <button type="button" onclick="window.history.back()">Indietro</button>
-              <button type="submit">Avanti</button>
+               <button type="button" onclick="window.history.back()">Indietro</button>
+               <button type="button" onclick="window.location.href='index.html'" class="home-btn-navi">Home</button>
+               <button type="submit">Avanti</button>
             </div>
         </form>
     </div>
     
     <script>
-    // Mostra/nasconde sezioni energia/gas
+    // Mostra/nasconde sezioni energia/gas e gestisci required sui campi
     document.addEventListener('DOMContentLoaded', function() {
         const energiaCheckbox = document.getElementById('richiesta_elettrica');
         const gasCheckbox = document.getElementById('richiesta_gas');
         const sezioneEnergia = document.getElementById('sezione-elettrica');
         const sezioneGas = document.getElementById('sezione-gas');
+        const energiaFields = Array.from(document.querySelectorAll('.energia-obbligatoria'));
+        const gasFields = Array.from(document.querySelectorAll('.gas-obbligatoria'));
+
+        function setRequired(fields, required) {
+            fields.forEach(field => {
+                if (required) {
+                    field.setAttribute('required', 'required');
+                } else {
+                    field.removeAttribute('required');
+                }
+            });
+        }
+
         function toggleSections() {
-            sezioneEnergia.style.display = energiaCheckbox.checked ? 'block' : 'none';
-            sezioneGas.style.display = gasCheckbox.checked ? 'block' : 'none';
+            if (energiaCheckbox.checked) {
+                sezioneEnergia.style.display = 'block';
+                setRequired(energiaFields, true);
+            } else {
+                sezioneEnergia.style.display = 'none';
+                setRequired(energiaFields, false);
+            }
+            if (gasCheckbox.checked) {
+                sezioneGas.style.display = 'block';
+                setRequired(gasFields, true);
+            } else {
+                sezioneGas.style.display = 'none';
+                setRequired(gasFields, false);
+            }
         }
         energiaCheckbox.addEventListener('change', toggleSections);
         gasCheckbox.addEventListener('change', toggleSections);
@@ -401,7 +427,7 @@
         <hr style="margin:18px 0 12px 0;">
         <div class="contatti-version">
             <span class="contatti-ver-ico">&#128187;</span>
-            <span>Ver 0.0.1</span>
+            <span>Ver 2.0.0</span>
         </div>
     </div>
 </div>

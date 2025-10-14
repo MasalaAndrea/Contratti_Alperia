@@ -338,12 +338,33 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 firma: canvas && typeof canvas.toDataURL === 'function' ? canvas.toDataURL() : ""
             };
 
+            // Firma SDD (se presente)
+            const debitoreDiversoCheckbox = document.getElementById('debitore_diverso');
+            if (debitoreDiversoCheckbox && debitoreDiversoCheckbox.checked) {
+                const canvasFirmaSDD = document.getElementById('firma-debitore-sdd-pad');
+                if (canvasFirmaSDD && typeof canvasFirmaSDD.toDataURL === 'function') {
+                    let blankCanvas = document.createElement('canvas');
+                    blankCanvas.width = canvasFirmaSDD.width;
+                    blankCanvas.height = canvasFirmaSDD.height;
+                    if (canvasFirmaSDD.toDataURL() !== blankCanvas.toDataURL() && canvasFirmaSDD.toDataURL().length > 300) {
+                        paymentData.firma_debitore_sdd = canvasFirmaSDD.toDataURL();
+                        console.log('DEBUG: Salvo firma_debitore_sdd:', paymentData.firma_debitore_sdd.substring(0,80) + '...');
+                    } else {
+                        console.log('DEBUG: canvasFirmaSDD vuoto, non salvo firma_debitore_sdd');
+                    }
+                } else {
+                    console.log('DEBUG: canvasFirmaSDD non trovato');
+                }
+            }
+
+            console.log('DEBUG: paymentData che salvo:', paymentData);
+
             sessionStorage.setItem('paymentData', JSON.stringify(paymentData));
             window.location.href = 'riepilogo.html';
         });
     }
-});
-document.addEventListener('DOMContentLoaded', function() {
+
+    // --- MODAL CONTATTI ---
     const contattiLink = document.getElementById('contatti-link');
     const contattiModal = document.getElementById('contatti-modal');
     const contattiClose = document.getElementById('contatti-close');

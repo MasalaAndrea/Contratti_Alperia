@@ -3,70 +3,77 @@
     "Tipo": "business",
     "Categoria": "Energia",
     "Nome Offerta": "Alperia Power Fix Braies",
-    "Codice": "000368ENFFL06XX1804212X250911XVE",
-    "PDF_CTE": "CTE_AlperiaPowerFixBraiesITA.pdf"
+    "Codice": "000368ENFFL06XX1804212X251011XVE",
+    "PDF_CTE": "CTE_Alperia Power Fix Braies_ITA_.pdf"
   },
   {
     "Tipo": "business",
     "Categoria": "Energia",
     "Nome Offerta": "Alperia Power Fix Neves",
-    "Codice": "000368ENFFL06XX1854213X250911XVE",
-    "PDF_CTE": "CTE_AlperiaPowerFixNevesITA.pdf"
+    "Codice": "000368ENFFL06XX1854213X251011XVE",
+    "PDF_CTE": "CTE_Alperia Power Fix Neves_ITA_.pdf"
   },
   {
     "Tipo": "business",
     "Categoria": "Energia",
     "Nome Offerta": "Alperia Power Index Braies",
     "Codice": "000368ENVOL01XX1614167X250311XVE",
-    "PDF_CTE": "CTE_AlperiaPowerIndexBraiesITA.pdf"
+    "PDF_CTE": "CTE_Alperia Power Index Braies_ITA_.pdf"
   },
   {
     "Tipo": "business",
     "Categoria": "Energia",
     "Nome Offerta": "Alperia Power Fix Carezza",
-    "Codice": "000368ESFFL06XX1844210X250911XVE",
-    "PDF_CTE": "CTE_AlperiaPowerFixCarezzaITA.pdf"
+    "Codice": "000368ESFFL06XX1844210X251011XVE",
+    "PDF_CTE": "CTE_Alperia Power Fix Carezza_ITA_.pdf"
   },
   {
     "Tipo": "business",
     "Categoria": "Energia",
     "Nome Offerta": "Alperia Power Index Neves",
     "Codice": "000368ENVOL01XX1624168X250311XVE",
-    "PDF_CTE": "CTE_AlperiaPowerIndexNevesITA.pdf"
+    "PDF_CTE": "CTE_Alperia Power Index Neves_ITA_.pdf"
+  },
+  {
+    "Tipo": "business",
+    "Categoria": "Energia",
+    "Nome Offerta": "Alperia Power Index Carezza",
+    "Codice": "000368ESVOL01XX1644165X250311XVE",
+    "PDF_CTE": "CTE_Alperia Power Index Carezza_ITA_.pdf"
   },
   {
     "Tipo": "business",
     "Categoria": "Energia",
     "Nome Offerta": "Alperia Power Index Resia",
     "Codice": "000368ENVOL01XX1634166X250311XVE",
-    "PDF_CTE": "CTE_AlperiaPowerIndexResiaITA.pdf"
+    "PDF_CTE": "CTE_Alperia Power Index Resia_ITA_.pdf"
   },
   {
     "Tipo": "business",
     "Categoria": "Gas",
     "Nome Offerta": "Alperia Gas Index Braies",
     "Codice": "000368GNVML01XX1424134X250411XVE",
-    "PDF_CTE": "CTE_AlperiaGasIndexBraiesITA.pdf"
+    "PDF_CTE": "CTE_Alperia Gas Index Braies_ITA_NORI.pdf"
   },
   {
     "Tipo": "business",
     "Categoria": "Gas",
     "Nome Offerta": "Alperia Gas Index Neves",
     "Codice": "000368GNVML01XX1324141X250411XVE",
-    "PDF_CTE": "CTE_AlperiaGasIndexNevesITA.pdf"
+    "PDF_CTE": "CTE_Alperia Gas Index Neves_ITA_NORI.pdf"
   },
   {
     "Tipo": "business",
     "Categoria": "Gas",
     "Nome Offerta": "Alperia Gas Index Resia",
     "Codice": "000368GNVML01XX1414133X250411XVE",
-    "PDF_CTE": "CTE_AlperiaGasIndexResiaITA.pdf"
+    "PDF_CTE": "CTE_Alperia Gas Index Resia_ITA_NORI.pdf"
   },
   {
     "Tipo": "business",
     "Categoria": "Gas",
     "Nome Offerta": "Alperia Gas Index Carezza",
     "Codice": "000368GSVML01XX1404131X250411XVE",
-    "PDF_CTE": "CTE_AlperiaGasIndexCarezzaITA.pdf"
+    "PDF_CTE": "CTE_Alperia Gas Index Carezza_ITA_NORI.pdf"
   }
 ]

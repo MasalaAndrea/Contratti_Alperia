@@ -11,9 +11,11 @@
         <h1>Riepilogo Dati Business</h1>
 
         <div id="riepilogo-business-card-cliente" class="card-dati-cliente card-centrale">
+            <div id="riepilogo-agente"></div>
+              </div>
             <!-- Dati Cliente Business -->
         </div>
-
+       
         <div id="riepilogo-business-card-tecnici" class="card-dati-tecnici card-centrale">
             <!-- Dati Tecnici di Fornitura -->
         </div>
@@ -22,10 +24,18 @@
             <!-- Pagamento e Consensi -->
         </div>
 
-        <div class="form-group" style="margin-top:32px;">
-            <label for="nome_file_pdf">Nome del file PDF:</label>
-            <input type="text" id="nome_file_pdf" placeholder="Nome del file PDF">
-        </div>
+                <div class="form-group" style="margin-top:32px;">
+    <label for="nome_file_pdf">Nome del file PDF:</label>
+    <input type="text" id="nome_file_pdf" placeholder="Nome del file PDF">
+</div>
+
+<!-- AGGIUNTA CHECKBOX CONDIZIONI GENERALI -->
+<div class="form-group">
+  <label class="checkbox-allega">
+    <input type="checkbox" id="allega-condizioni-generali">
+    <span>Allega Condizioni Generali</span>
+  </label>
+</div>
 
         <button id="genera-pdf-btn" class="main-btn">Genera Contratto</button>
         <button id="condividi-pdf-btn" class="main-btn" style="display:none; margin-top:12px;">Condividi PDF</button>
@@ -184,11 +194,10 @@
         <hr style="margin:18px 0 12px 0;">
         <div class="contatti-version">
             <span class="contatti-ver-ico">&#128187;</span>
-            <span>Ver 0.0.1</span>
+            <span>Ver 2.0.0</span>
         </div>
     </div>
 </div>
-<script src="script_business.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const contattiLink = document.getElementById('contatti-link');

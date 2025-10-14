@@ -1,0 +1,11 @@
+# Ignora il file delle variabili d'ambiente
+.env
+
+# Ignora la cartella delle dipendenze Node.js
+node_modules/
+
+# Ignora file di log
+*.log
+
+# Ignora file temporanei
+tmp/

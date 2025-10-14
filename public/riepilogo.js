@@ -1,15 +1,23 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    // Nuovi container per le card
+// --- Mostra il nome agente nel riepilogo (solo una volta) ---
+document.addEventListener('DOMContentLoaded', function() {
+    // Leggi da localStorage oppure sessionStorage (in ordine di preferenza)
+    const agente = localStorage.getItem('agente') || sessionStorage.getItem('agente') || '';
+    const divAgente = document.getElementById('riepilogo-agente');
+    if (divAgente) {
+        divAgente.textContent = "Agente: " + agente;
+    }
+});
+
+    // --- RIEPILOGO CARD E VARIABILI ---
+    document.addEventListener('DOMContentLoaded', async () => {
     const cardCliente = document.getElementById('riepilogo-card-cliente');
     const cardTecnici = document.getElementById('riepilogo-card-tecnici');
     const cardConsensi = document.getElementById('riepilogo-card-consensi');
     const generaPdfBtn = document.getElementById('genera-pdf-btn');
     const avvisoDocumenti = document.getElementById('avviso-documenti');
     const avvisoOkBtn = document.getElementById('avviso-ok-btn');
-    // Pulsante condividi PDF
     const condividiPdfBtn = document.getElementById('condividi-pdf-btn');
     const condividiPdfMsg = document.getElementById('condividi-pdf-msg');
-    // Variabile globale per il PDF generato
     let pdfBlob = null;
 
     const customerData = JSON.parse(sessionStorage.getItem('customerData'));
@@ -37,7 +45,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return `<div class="card-title">${testo}</div>`;
     }
 
-    // Funzione per ottenere il nome offerta dal codice offerta e dalla categoria, dal file offerte
     async function getNomeOfferta(codiceOfferta, categoria) {
         try {
             const offerte = await fetch('/offerte_residenziali.json').then(r => r.json());
@@ -52,7 +59,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- CARD DATI CLIENTE ---
     function renderCardCliente() {
         if (!cardCliente) return;
         let html = titoloCard('Dati Cliente');
@@ -71,55 +77,52 @@ document.addEventListener('DOMContentLoaded', async () => {
         cardCliente.innerHTML = html;
     }
 
-    // --- CARD DATI TECNICI ---
     async function renderCardTecnici() {
-    if (!cardTecnici) return;
-    let html = titoloCard('Dati Tecnici di Fornitura');
-    if (technicalData) {
-        if (technicalData.richiesta_elettrica && technicalData.dati_elettrici) {
-            const nomeOffertaEE = await getNomeOfferta(technicalData.dati_elettrici.codice_offerta, "energia");
-            html += `<div style="margin-bottom: 12px; font-weight:bold; color:#115890;">Energia Elettrica</div>`;
-            const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
-            let tipoRichiestaEE = technicalData.dati_elettrici.tipo_richiesta || '';
-            if (!officialOptions.includes(tipoRichiestaEE)) {
-                tipoRichiestaEE = "Nessuna selezione";
+        if (!cardTecnici) return;
+        let html = titoloCard('Dati Tecnici di Fornitura');
+        if (technicalData) {
+            if (technicalData.richiesta_elettrica && technicalData.dati_elettrici) {
+                const nomeOffertaEE = await getNomeOfferta(technicalData.dati_elettrici.codice_offerta, "energia");
+                html += `<div style="margin-bottom: 12px; font-weight:bold; color:#115890;">Energia Elettrica</div>`;
+                const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
+                let tipoRichiestaEE = technicalData.dati_elettrici.tipo_richiesta || '';
+                if (!officialOptions.includes(tipoRichiestaEE)) {
+                    tipoRichiestaEE = "Nessuna selezione";
+                }
+                let potenzaImpegnata = technicalData.dati_elettrici.potenza_impegnata || '';
+                potenzaImpegnata = typeof potenzaImpegnata === "string" ? potenzaImpegnata.replace(',', '.') : potenzaImpegnata;
+                html += campo('Tipo Richiesta:', tipoRichiestaEE);
+                html += campo('Data Attivazione:', formattaData(technicalData.dati_elettrici.data_attivazione) || '');
+                html += campo('Codice POD:', [technicalData.dati_elettrici.codice_pod_1, technicalData.dati_elettrici.codice_pod_2].filter(Boolean).join(' ') || '');
+                html += campo('Fornitore Uscente:', technicalData.dati_elettrici.fornitore_uscente || '');
+                html += campo('Consumo annuo (kWh):', technicalData.dati_elettrici.consumo_annuo_kwh || '');
+                html += campo('Potenza Impegnata (kW):', potenzaImpegnata);
+                html += campo('Tipologia Uso:', technicalData.dati_elettrici.tipologia_uso || '');
+                html += campo('Nome Offerta:', nomeOffertaEE || technicalData.dati_elettrici.nome_offerta || '');
+                html += campo('Codice Offerta:', technicalData.dati_elettrici.codice_offerta || '');
             }
-            // MODIFICA: visualizza sempre il valore normalizzato (virgola > punto)
-            let potenzaImpegnata = technicalData.dati_elettrici.potenza_impegnata || '';
-            potenzaImpegnata = typeof potenzaImpegnata === "string" ? potenzaImpegnata.replace(',', '.') : potenzaImpegnata;
-            html += campo('Tipo Richiesta:', tipoRichiestaEE);
-            html += campo('Data Attivazione:', formattaData(technicalData.dati_elettrici.data_attivazione) || '');
-            html += campo('Codice POD:', [technicalData.dati_elettrici.codice_pod_1, technicalData.dati_elettrici.codice_pod_2].filter(Boolean).join(' ') || '');
-            html += campo('Fornitore Uscente:', technicalData.dati_elettrici.fornitore_uscente || '');
-            html += campo('Consumo annuo (kWh):', technicalData.dati_elettrici.consumo_annuo_kwh || '');
-            html += campo('Potenza Impegnata (kW):', potenzaImpegnata);
-            html += campo('Tipologia Uso:', technicalData.dati_elettrici.tipologia_uso || '');
-            html += campo('Nome Offerta:', nomeOffertaEE || technicalData.dati_elettrici.nome_offerta || '');
-            html += campo('Codice Offerta:', technicalData.dati_elettrici.codice_offerta || '');
-        }
-        if (technicalData.richiesta_gas && technicalData.dati_gas) {
-            const nomeOffertaGas = await getNomeOfferta(technicalData.dati_gas.codice_offerta, "gas");
-            html += `<div style="margin-bottom: 12px; font-weight:bold; color:#c45a13;">Gas Naturale</div>`;
-            const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
-            let tipoRichiestaGas = technicalData.dati_gas.tipo_richiesta || '';
-            if (!officialOptions.includes(tipoRichiestaGas)) {
-                tipoRichiestaGas = "Nessuna selezione";
+            if (technicalData.richiesta_gas && technicalData.dati_gas) {
+                const nomeOffertaGas = await getNomeOfferta(technicalData.dati_gas.codice_offerta, "gas");
+                html += `<div style="margin-bottom: 12px; font-weight:bold; color:#c45a13;">Gas Naturale</div>`;
+                const officialOptions = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
+                let tipoRichiestaGas = technicalData.dati_gas.tipo_richiesta || '';
+                if (!officialOptions.includes(tipoRichiestaGas)) {
+                    tipoRichiestaGas = "Nessuna selezione";
+                }
+                html += campo('Tipo Richiesta:', tipoRichiestaGas);
+                html += campo('Data Attivazione:', formattaData(technicalData.dati_gas.data_attivazione) || '');
+                html += campo('Codice PDR:', technicalData.dati_gas.codice_pdr || '');
+                html += campo('Fornitore Uscente:', technicalData.dati_gas.fornitore_uscente || '');
+                html += campo('Consumo annuo (smc):', technicalData.dati_gas.consumo_annuo_smc || '');
+                html += campo('REMI:', technicalData.dati_gas.remi || '');
+                html += campo('Categoria Uso:', (technicalData.dati_gas.categoria_uso && technicalData.dati_gas.categoria_uso.join(', ')) || '');
+                html += campo('Nome Offerta:', nomeOffertaGas || technicalData.dati_gas.nome_offerta || '');
+                html += campo('Codice Offerta:', technicalData.dati_gas.codice_offerta || '');
             }
-            html += campo('Tipo Richiesta:', tipoRichiestaGas);
-            html += campo('Data Attivazione:', formattaData(technicalData.dati_gas.data_attivazione) || '');
-            html += campo('Codice PDR:', technicalData.dati_gas.codice_pdr || '');
-            html += campo('Fornitore Uscente:', technicalData.dati_gas.fornitore_uscente || '');
-            html += campo('Consumo annuo (smc):', technicalData.dati_gas.consumo_annuo_smc || '');
-            html += campo('REMI:', technicalData.dati_gas.remi || '');
-            html += campo('Categoria Uso:', (technicalData.dati_gas.categoria_uso && technicalData.dati_gas.categoria_uso.join(', ')) || '');
-            html += campo('Nome Offerta:', nomeOffertaGas || technicalData.dati_gas.nome_offerta || '');
-            html += campo('Codice Offerta:', technicalData.dati_gas.codice_offerta || '');
         }
+        cardTecnici.innerHTML = html;
     }
-    cardTecnici.innerHTML = html;
-}
 
-    // --- CARD PAGAMENTO E CONSENSI ---
     function renderCardConsensi() {
         if (!cardConsensi) return;
         let html = titoloCard('Pagamento e Consensi');
@@ -140,8 +143,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (paymentData.firma) {
                 html += `
                     <div class="riepilogo-campo">
-                        <span class="campo-nome">Firma:</span>
+                        <span class="campo-nome">Firma intestatario contratto:</span>
                         <span class="campo-valore"><img src="${paymentData.firma}" alt="Firma del cliente" style="border: 1px solid #ccc; max-width: 100%; height: auto;"></span>
+                    </div>
+                `;
+            }
+            if (paymentData.firma_debitore_sdd) {
+                html += `
+                    <div class="riepilogo-campo">
+                        <span class="campo-nome">Firma debitore SDD:</span>
+                        <span class="campo-valore"><img src="${paymentData.firma_debitore_sdd}" alt="Firma SDD" style="border: 1px solid #ccc; max-width: 100%; height: auto;"></span>
                     </div>
                 `;
             }
@@ -149,14 +160,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         cardConsensi.innerHTML = html;
     }
 
-    // Rende tutte le card
     async function renderAllCards() {
         renderCardCliente();
         await renderCardTecnici();
         renderCardConsensi();
     }
 
-    // -------- SALVATAGGIO BOZZA --------
+    await renderAllCards();
+
     const salvaBozzaBtn = document.getElementById('salva-bozza-btn');
     if (salvaBozzaBtn) {
         salvaBozzaBtn.addEventListener('click', function() {
@@ -167,7 +178,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (nomeBozzaInput) nomeBozzaInput.focus();
                 return;
             }
-            // Costruisci oggetto bozza
             const bozzaData = {
                 customerData,
                 technicalData,
@@ -182,7 +192,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ----- FUNZIONE AGGIUNTA: invia il PDF generato al backend -----
     function isIOS() {
         return /iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
@@ -190,7 +199,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function inviaPDFAlBackend(pdfBytes, nomeFile, dati) {
         try {
             if (isIOS()) {
-                // Converti il pdfBytes (Uint8Array o ArrayBuffer) in base64
                 let binary = '';
                 const bytes = new Uint8Array(pdfBytes);
                 for (let i = 0; i < bytes.byteLength; i++) {
@@ -217,7 +225,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 alert('PDF (base64) inviato al server!');
             } else {
-                // Metodo classico per Android/desktop
                 const formData = new FormData();
                 formData.append('pdf', new Blob([pdfBytes], { type: 'application/pdf' }), nomeFile);
                 formData.append('dati', JSON.stringify(dati));
@@ -231,7 +238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const response = await fetch(API_BASE_URL + '/generate-pdf', {
                      method: 'POST',
                      body: formData
-          });
+                });
                 if (!response.ok) {
                     throw new Error('Errore invio PDF al backend');
                 }
@@ -242,26 +249,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ----------- PDF UNIFICATO CON FIRMA E DATA FORMATTATA -----------
     async function generaPDFUnificato() {
         if (typeof window.PDFLib === 'undefined') {
             alert('La libreria PDF-Lib non è caricata! Controlla il tag <script> nell\'HTML.');
-            console.error('PDFLib non disponibile!');
             return;
         }
         const { PDFDocument } = window.PDFLib;
         try {
             const mainPdfUrl = '/A-0018-C-0524_PDA_CG_Retail.pdf';
             const resContratto = await fetch(mainPdfUrl);
-            if (!resContratto.ok) {
-                alert('Non trovo il file contratto: ' + mainPdfUrl);
-                throw new Error('File PDF contratto non trovato!');
-            }
+            if (!resContratto.ok) throw new Error('File PDF contratto non trovato!');
             const contrattoPdfBytes = await resContratto.arrayBuffer();
             const contrattoDoc = await PDFDocument.load(contrattoPdfBytes);
             const formContratto = contrattoDoc.getForm();
+            window.formContratto = formContratto;
+            const dataFirma = formattaData(paymentData.data_firma) || "";
 
-            // --- Compilazione campi contratto ---
+                     // Compila tutti i campi DATA
+              try { formContratto.getTextField('DATA').setText(dataFirma); } catch(e) {}
+
+                       // Se c'è SDD, compila anche DATA_SDD
+              if (paymentData.autorizzazione_sdd) {
+                try { formContratto.getTextField('DATA_SDD').setText(dataFirma); } catch(e) {}
+          }
+
+            // --- Compilazione campi ANAGRAFICI ---
             formContratto.getTextField('Cognome').setText(customerData.cognome || '');
             formContratto.getTextField('Nome').setText(customerData.nome || '');
             formContratto.getTextField('Codice Fiscale').setText(customerData.cf || '');
@@ -272,12 +284,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             formContratto.getTextField('Prov').setText(customerData.provincia_residenza || '');
             formContratto.getTextField('Cellulare').setText(customerData.cellulare || '');
             formContratto.getTextField('E-mail').setText(customerData.mail || '');
+            formContratto.getTextField('Agente').setText(localStorage.getItem('agente') || '');
             if (customerData.residente_fornitura === 'si') {
                 formContratto.getCheckBox('Residente presso la fornitura_SI').check();
-             } else {
-                 formContratto.getCheckBox('Residente presso la fornitura_NO').check();
-          }
-
+            } else {
+                formContratto.getCheckBox('Residente presso la fornitura_NO').check();
+            }
             if (customerData.fornitura_diversa) {
                 formContratto.getTextField('Indirizzo').setText(customerData.indirizzo_fornitura || '');
                 formContratto.getTextField('n_2').setText(customerData.n_fornitura || '');
@@ -302,7 +314,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         formContratto.getCheckBox('dati_elettrici_Nuova Attivazione').check();
                         break;
                 }
-
                 formContratto.getTextField('Data Attivazione').setText(formattaData(technicalData.dati_elettrici.data_attivazione) || '');
                 formContratto.getTextField('codice_pod_1').setText(technicalData.dati_elettrici.codice_pod_1 || '');
                 formContratto.getTextField('codice_pod_2').setText(technicalData.dati_elettrici.codice_pod_2 || '');
@@ -311,9 +322,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 formContratto.getTextField('Potenza impegnata (kW)').setText(technicalData.dati_elettrici.potenza_impegnata || '');
 
                 if (technicalData.richiesta_elettrica && technicalData.dati_elettrici.tipologia_uso) {
-                    try { formContratto.getCheckBox(technicalData.dati_elettrici.tipologia_uso).check(); } catch(e) { console.error('Tipologia uso energia:', technicalData.dati_elettrici.tipologia_uso, e); }
+                    try { formContratto.getCheckBox(technicalData.dati_elettrici.tipologia_uso).check(); } catch(e) {}
                 }
-                // Usa il nome offerta calcolato
+                // Nome offerta
                 const offerte = await fetch('/offerte_residenziali.json').then(r => r.json()).catch(() => []);
                 const nomeOffertaEE = await getNomeOfferta(technicalData.dati_elettrici.codice_offerta, "energia");
                 formContratto.getTextField('Nome Offerta sottoscritta').setText(nomeOffertaEE || technicalData.dati_elettrici.nome_offerta || '');
@@ -350,209 +361,226 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (Array.isArray(categoriaGas)) {
                     categoriaGas.forEach(cat => {
                         if (gasMap[cat]) {
-                            try { formContratto.getCheckBox(gasMap[cat]).check(); } catch(e) {console.error('Errore gas:', gasMap[cat], e);}
+                            try { formContratto.getCheckBox(gasMap[cat]).check(); } catch(e) {}
                         }
                     });
                 } else if (typeof categoriaGas === 'string' && categoriaGas.length > 0) {
                     if (gasMap[categoriaGas]) {
-                        try { formContratto.getCheckBox(gasMap[categoriaGas]).check(); } catch(e) {console.error('Errore gas:', gasMap[categoriaGas], e);}
+                        try { formContratto.getCheckBox(gasMap[categoriaGas]).check(); } catch(e) {}
                     }
                 }
-                // Usa il nome offerta calcolato
                 const offerte = await fetch('/offerte_residenziali.json').then(r => r.json()).catch(() => []);
                 const nomeOffertaGas = await getNomeOfferta(technicalData.dati_gas.codice_offerta, "gas");
                 formContratto.getTextField('Nome Offerta sottoscritta_2').setText(nomeOffertaGas || technicalData.dati_gas.nome_offerta || '');
                 formContratto.getTextField('Codice offerta_2').setText(technicalData.dati_gas.codice_offerta || '');
             }
-
             if (paymentData) {
                 formContratto.getTextField('DATA').setText(formattaData(paymentData.data_firma) || '');
                 formContratto.getTextField('Cognome Nome del Debitore').setText(paymentData.sdd_dati?.cognome_nome || '');
                 formContratto.getTextField('Indirizzo (Via Piazza CAP E COMUNE)').setText(paymentData.sdd_dati?.indirizzo_debitore || '');
                 formContratto.getTextField('Codice Fiscale/Partita IVA del titolare del Conto Corrente').setText(paymentData.sdd_dati?.cf_debitore || '');
                 formContratto.getTextField('IBAN di addebito').setText(paymentData.sdd_dati?.iban || '');
+            }
+            if (technicalData.richiesta_elettrica) {
+                try { formContratto.getCheckBox('ENERGIA').check(); } catch (e) {}
+            }
+            if (technicalData.richiesta_gas) {
+                try { formContratto.getCheckBox('GAS').check(); } catch (e) {}
+            }
 
-                if (paymentData.dichiarazione_notorieta) {
-                    formContratto.getRadioGroup('dichiarazione_notorieta').select(paymentData.dichiarazione_notorieta);
-                }
-                if (Array.isArray(paymentData.documento_identita) && paymentData.documento_identita.length) {
-                    formContratto.getRadioGroup('documento_identita').select(paymentData.documento_identita[0]);
-                }
+            // --- Compilazione campi PAGAMENTO/CONSENSI ---
+            if (paymentData.dichiarazione_notorieta) {
+                formContratto.getRadioGroup('dichiarazione_notorieta').select(paymentData.dichiarazione_notorieta);
+            }
+            if (Array.isArray(paymentData.documento_identita) && paymentData.documento_identita.length) {
+                formContratto.getRadioGroup('documento_identita').select(paymentData.documento_identita[0]);
+            }
+            if (paymentData.consenso_obbligatorio) formContratto.getCheckBox('Presa Visione Informativa').check();
+            if (paymentData.consensi_commerciali?.promozione === true) {
+                formContratto.getCheckBox('Consenso_Promozione').check();
+            } else if (paymentData.consensi_commerciali?.promozione === false) {
+                formContratto.getCheckBox('Consenso_Promozione_no').check();
+            }
+            if (paymentData.consensi_commerciali?.profilazione === true) {
+                formContratto.getCheckBox('Consenso_Profilazione').check();
+            } else if (paymentData.consensi_commerciali?.profilazione === false) {
+                formContratto.getCheckBox('Consenso_Profilazione_no').check();
+            }
+            if (paymentData.consensi_commerciali?.terzi === true) {
+                formContratto.getCheckBox('Consenso_Terzi').check();
+            } else if (paymentData.consensi_commerciali?.terzi === false) {
+                formContratto.getCheckBox('Consenso_Terzi_no').check();
+            }
 
-                if (paymentData.consenso_obbligatorio) formContratto.getCheckBox('Presa Visione Informativa').check();
+            // --- FIRMA CLIENTE SU COORDINATE FISSE, COME BUSINESS ---
+            // Personalizza queste coordinate per il tuo template!
+            const signaturePositionsPagina1 = [
+                { x: 325, y: 459, width: 136.06, height: 25.51 },
+                // aggiungi altre posizioni se servono
+            ];
+            const signaturePositionsPagina2 = [
+                { x: 345.33, y: 190.4, width: 136.06, height: 25.51 },
+                { x: 345.33, y: 272.8, width: 136.06, height: 25.51 },
+                { x: 391.33, y: 496.92, width: 136.06, height: 25.51 },
+                { x: 345.57, y: 578.87, width: 136.06, height: 25.51 },
+                // aggiungi altre posizioni se servono
+            ];
 
-                if (paymentData.consensi_commerciali?.promozione === true) {
-                    formContratto.getCheckBox('Consenso_Promozione').check();
-                } else if (paymentData.consensi_commerciali?.promozione === false) {
-                    formContratto.getCheckBox('Consenso_Promozione_no').check();
-                }
-                if (paymentData.consensi_commerciali?.profilazione === true) {
-                    formContratto.getCheckBox('Consenso_Profilazione').check();
-                } else if (paymentData.consensi_commerciali?.profilazione === false) {
-                    formContratto.getCheckBox('Consenso_Profilazione_no').check();
-                }
-                if (paymentData.consensi_commerciali?.terzi === true) {
-                    formContratto.getCheckBox('Consenso_Terzi').check();
-                } else if (paymentData.consensi_commerciali?.terzi === false) {
-                    formContratto.getCheckBox('Consenso_Terzi_no').check();
-                }
-
-                if (paymentData.firma) {
-                    const signatureImage = await contrattoDoc.embedPng(paymentData.firma);
-                    const pages = contrattoDoc.getPages();
-                    const firstPage = pages[0];
-                    const secondPage = pages[1];
-                    const width = 136.06;
-                    const height = 25.51;
-                
-                    firstPage.drawImage(signatureImage, {
-                        x: 325.8,
-                        y: 453.54,
-                        width: width,
-                        height: height,
+            if (paymentData.firma) {
+                const signatureImage = await contrattoDoc.embedPng(paymentData.firma);
+                const pages = contrattoDoc.getPages();
+                // Prima pagina
+                signaturePositionsPagina1.forEach(pos => {
+                    pages[0].drawImage(signatureImage, {
+                        x: pos.x, y: pos.y, width: pos.width, height: pos.height
                     });
-
-                    if (paymentData.autorizzazione_sdd) {
-                        firstPage.drawImage(signatureImage, {
-                            x: 351.57,
-                            y: 70.87,
-                            width: width,
-                            height: height,
+                });
+                // Seconda pagina
+                if (pages.length > 1) {
+                    signaturePositionsPagina2.forEach(pos => {
+                        pages[1].drawImage(signatureImage, {
+                            x: pos.x, y: pos.y, width: pos.width, height: pos.height
                         });
-                    }
-                    
-                    secondPage.drawImage(signatureImage, {
-                        x: 334.33,
-                        y: 578.82,
-                        width: width,
-                        height: height,
-                    });
-                    secondPage.drawImage(signatureImage, {
-                        x: 382.68,
-                        y: 493.15,
-                        width: width,
-                        height: height,
-                    });
-                    secondPage.drawImage(signatureImage, {
-                        x: 334.33,
-                        y: 277.8,
-                        width: width,
-                        height: height,
-                    });
-                    secondPage.drawImage(signatureImage, {
-                        x: 334.33,
-                        y: 189.92,
-                        width: width,
-                        height: height,
                     });
                 }
             }
-
+            // Firma SDD se diversa
+            if (paymentData.autorizzazione_sdd && paymentData.firma_debitore_sdd && paymentData.firma !== paymentData.firma_debitore_sdd) {
+                const signatureImageSDD = await contrattoDoc.embedPng(paymentData.firma_debitore_sdd);
+                const pages = contrattoDoc.getPages();
+                if (pages.length > 1) {
+                    // Esempio: inserisci la firma SDD su una posizione specifica della seconda pagina
+                    pages[0].drawImage(signatureImageSDD, {
+                        x: 362.57, y: 62.87, width: 136.06, height: 25.51
+                    });
+                }
+            }
+                // Mostra tutti i valori dei campi testo del PDF
+formContratto.getFields().forEach(f => {
+    if (f.constructor.name === "PDFTextField") {
+        console.log('Campo:', f.getName(), '=>', f.getText());
+    }
+});    
             formContratto.flatten();
 
-            // --- Cerca le CTE ENERGIA e GAS se richieste ---
-            const offerteCTE = await fetch('/offerte_residenziali.json').then(r => r.json());
+            // --- DICHIARA QUI LA VARIABILE! ---
             let cteDocs = [];
+
+            // --- Cerca le CTE ENERGIA e GAS come prima ---
+            const offerteCTE = await fetch('/offerte_residenziali.json').then(r => r.json());
             // ENERGIA
             if (technicalData.richiesta_elettrica && technicalData.dati_elettrici && technicalData.dati_elettrici.codice_offerta) {
                 const offertaEnergia = offerteCTE.find(o => (o.codice_offerta === technicalData.dati_elettrici.codice_offerta || o.Codice === technicalData.dati_elettrici.codice_offerta) && (o.categoria?.toLowerCase() === "energia" || o.Categoria?.toLowerCase() === "energia"));
-                if (!offertaEnergia || !offertaEnergia.PDF_CTE) {
-                    alert('CTE energia non trovata per offerta: ' + technicalData.dati_elettrici.codice_offerta);
-                    throw new Error('CTE energia non trovata!');
+                if (offertaEnergia && offertaEnergia.PDF_CTE) {
+                    const ctePdfUrlEnergia = '/cte_energia/' + offertaEnergia.PDF_CTE;
+                    const resCTEEnergia = await fetch(ctePdfUrlEnergia);
+                    if (resCTEEnergia.ok) {
+                        const ctePdfBytesEnergia = await resCTEEnergia.arrayBuffer();
+                        const cteDocEnergia = await PDFDocument.load(ctePdfBytesEnergia);
+                        const formCTEEnergia = cteDocEnergia.getForm();
+                        formCTEEnergia.getTextField('DATA').setText(formattaData(paymentData.data_firma) || '');
+                        if (paymentData.firma) {
+                            const signatureImageCTEE = await cteDocEnergia.embedPng(paymentData.firma);
+                            const ctePagesEE = cteDocEnergia.getPages();
+                            const cteFirstPageEE = ctePagesEE[0];
+                            cteFirstPageEE.drawImage(signatureImageCTEE, {
+                                x: 380.68,
+                                y: 95.15,
+                                width: 136.06,
+                                height: 25.51,
+                            });
+                        }
+                        formCTEEnergia.flatten();
+                        cteDocs.push(cteDocEnergia);
+                    }
                 }
-                const ctePdfUrlEnergia = '/cte_energia/' + offertaEnergia.PDF_CTE;
-                const resCTEEnergia = await fetch(ctePdfUrlEnergia);
-                if (!resCTEEnergia.ok) {
-                    alert('Non trovo il file CTE energia: ' + ctePdfUrlEnergia);
-                    throw new Error('File PDF CTE energia non trovato!');
-                }
-                const ctePdfBytesEnergia = await resCTEEnergia.arrayBuffer();
-                const cteDocEnergia = await PDFDocument.load(ctePdfBytesEnergia);
-                const formCTEEnergia = cteDocEnergia.getForm();
-                
-                formCTEEnergia.getTextField('DATA').setText(formattaData(paymentData.data_firma) || '');
-                if (paymentData.firma) {
-                    const signatureImageCTEE = await cteDocEnergia.embedPng(paymentData.firma);
-                    const ctePagesEE = cteDocEnergia.getPages();
-                    const cteFirstPageEE = ctePagesEE[0];
-                    cteFirstPageEE.drawImage(signatureImageCTEE, {
-                        x: 380.68,
-                        y: 95.15,
-                        width: 136.06,
-                        height: 25.51,
-                    });
-                }
-                formCTEEnergia.flatten();
-                cteDocs.push(cteDocEnergia);
             }
             // GAS
             if (technicalData.richiesta_gas && technicalData.dati_gas && technicalData.dati_gas.codice_offerta) {
                 const offertaGas = offerteCTE.find(o => (o.codice_offerta === technicalData.dati_gas.codice_offerta || o.Codice === technicalData.dati_gas.codice_offerta) && (o.categoria?.toLowerCase() === "gas" || o.Categoria?.toLowerCase() === "gas"));
-                if (!offertaGas || !offertaGas.PDF_CTE) {
-                    alert('CTE gas non trovata per offerta: ' + technicalData.dati_gas.codice_offerta);
-                    throw new Error('CTE gas non trovata!');
+                if (offertaGas && offertaGas.PDF_CTE) {
+                    const ctePdfUrlGas = '/cte_gas/' + offertaGas.PDF_CTE;
+                    const resCTEGas = await fetch(ctePdfUrlGas);
+                    if (resCTEGas.ok) {
+                        const ctePdfBytesGas = await resCTEGas.arrayBuffer();
+                        const cteDocGas = await PDFDocument.load(ctePdfBytesGas);
+                        const formCTEGas = cteDocGas.getForm();
+                        formCTEGas.getTextField('DATA').setText(formattaData(paymentData.data_firma) || '');
+                        if (paymentData.firma) {
+                            const signatureImageCTEG = await cteDocGas.embedPng(paymentData.firma);
+                            const ctePagesGas = cteDocGas.getPages();
+                            const cteFirstPageGas = ctePagesGas[0];
+                            cteFirstPageGas.drawImage(signatureImageCTEG, {
+                                x: 380.68,
+                                y: 95.15,
+                                width: 136.06,
+                                height: 25.51,
+                            });
+                        }
+                        formCTEGas.flatten();
+                        cteDocs.push(cteDocGas);
+                    }
                 }
-                const ctePdfUrlGas = '/cte_gas/' + offertaGas.PDF_CTE;
-                const resCTEGas = await fetch(ctePdfUrlGas);
-                if (!resCTEGas.ok) {
-                    alert('Non trovo il file CTE gas: ' + ctePdfUrlGas);
-                    throw new Error('File PDF CTE gas non trovato!');
-                }
-                const ctePdfBytesGas = await resCTEGas.arrayBuffer();
-                const cteDocGas = await PDFDocument.load(ctePdfBytesGas);
-                const formCTEGas = cteDocGas.getForm();
-                formCTEGas.getTextField('DATA').setText(formattaData(paymentData.data_firma) || '');
-                if (paymentData.firma) {
-                    const signatureImageCTEG = await cteDocGas.embedPng(paymentData.firma);
-                    const ctePagesGas = cteDocGas.getPages();
-                    const cteFirstPageGas = ctePagesGas[0];
-                    cteFirstPageGas.drawImage(signatureImageCTEG, {
-                        x: 380.68,
-                        y: 95.15,
-                        width: 136.06,
-                        height: 25.51,
-                    });
-                }
-                formCTEGas.flatten();
-                cteDocs.push(cteDocGas);
             }
 
-            // --- UNISCI CONTRATTO + CTE ENERGIA + CTE GAS (se presenti) ---
-            const finalPdfDoc = await PDFDocument.create();
-            const contrattoPages = await finalPdfDoc.copyPages(contrattoDoc, contrattoDoc.getPageIndices());
-            contrattoPages.forEach(page => finalPdfDoc.addPage(page));
-            for (const cteDoc of cteDocs) {
-                const ctePages = await finalPdfDoc.copyPages(cteDoc, cteDoc.getPageIndices());
-                ctePages.forEach(page => finalPdfDoc.addPage(page));
-            }
+// --- UNISCI CONTRATTO + CTE ENERGIA + CTE GAS (se presenti) ---
+const finalPdfDoc = await PDFLib.PDFDocument.create();
+const contrattoPages = await finalPdfDoc.copyPages(contrattoDoc, contrattoDoc.getPageIndices());
+contrattoPages.forEach(page => finalPdfDoc.addPage(page));
+for (const cteDoc of cteDocs) {
+    const ctePages = await finalPdfDoc.copyPages(cteDoc, cteDoc.getPageIndices());
+    ctePages.forEach(page => finalPdfDoc.addPage(page));
+}
 
-            const pdfBytes = await finalPdfDoc.save();
-            pdfBlob = new Blob([pdfBytes], { type: "application/pdf" }); // SALVA PER CONDIVISIONE
+// --- AGGIUNTA: ALLEGA CONDIZIONI GENERALI SE SPUNTATO ---
+const allegaCondizioni = document.getElementById('allega-condizioni-generali');
+if (allegaCondizioni && allegaCondizioni.checked) {
+    try {
+        const condizioniResp = await fetch('/Condizioni_Generali_Retail.pdf');
+        if (condizioniResp.ok) {
+            const condizioniBytes = await condizioniResp.arrayBuffer();
+            const condizioniDoc = await PDFLib.PDFDocument.load(condizioniBytes);
+            const condizioniPages = await finalPdfDoc.copyPages(condizioniDoc, condizioniDoc.getPageIndices());
+            condizioniPages.forEach(page => finalPdfDoc.addPage(page));
+        } else {
+            alert("Attenzione: impossibile allegare le Condizioni Generali (file non trovato)");
+        }
+    } catch (err) {
+        alert("Errore nell'allegare le Condizioni Generali: " + err.message);
+    }
+}
 
-            // Download del PDF
-            const nomeFileInput = document.getElementById('nome_file_pdf');
-            let nomeFile = "Contratto_e_CTE_Unificato.pdf";
-            if (nomeFileInput && nomeFileInput.value.trim() !== "") {
-                nomeFile = nomeFileInput.value.trim() + ".pdf";
-            }
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(pdfBlob);
-            link.download = nomeFile;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+// Mostra tutti i valori dei campi testo del PDF
+formContratto.getFields().forEach(f => {
+    if (f.constructor.name === "PDFTextField") {
+        console.log('Campo:', f.getName(), '=>', f.getText());
+    }
+});
 
-            console.log('PDF unico scaricato come Contratto_e_CTE_Unificato.pdf');
+const pdfBytes = await finalPdfDoc.save();
+pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
 
-            // -------- INVIO PDF AL BACKEND --------
+// Download del PDF
+const nomeFileInput = document.getElementById('nome_file_pdf');
+let nomeFile = "Contratto_e_CTE_Unificato.pdf";
+if (nomeFileInput && nomeFileInput.value.trim() !== "") {
+    nomeFile = nomeFileInput.value.trim() + ".pdf";
+}
+const link = document.createElement('a');
+link.href = URL.createObjectURL(pdfBlob);
+link.download = nomeFile;
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+
+    
+            // INVIO AL BACKEND
             await inviaPDFAlBackend(pdfBytes, nomeFile, customerData);
 
-            // -------- MOSTRA IL PULSANTE CONDIVIDI PDF --------
             if (condividiPdfBtn) {
                 condividiPdfBtn.style.display = 'inline-block';
                 if (condividiPdfMsg) condividiPdfMsg.style.display = 'none';
             }
-
             if (avvisoDocumenti) {
                 avvisoDocumenti.style.display = 'block';
             }
@@ -560,6 +588,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error("Errore durante la generazione del PDF unico:", error);
             alert("Errore nella generazione del PDF unico! Controlla la console.");
         }
+    }
+
+    if (generaPdfBtn) {
+        generaPdfBtn.addEventListener('click', generaPDFUnificato);
+    }
+    if (avvisoOkBtn) {
+        avvisoOkBtn.addEventListener('click', function() {
+            if (avvisoDocumenti) {
+                avvisoDocumenti.style.display = 'none';
+            }
+        });
     }
 
     // Funzione per condividere PDF (Web Share API)
@@ -595,20 +634,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     condividiPdfMsg.textContent = "Condivisione annullata o errore: " + err;
                     condividiPdfMsg.style.display = 'inline-block';
                 }
-            }
-        });
-    }
-
-    // Render cards all'avvio
-    await renderAllCards();
-
-    if (generaPdfBtn) {
-        generaPdfBtn.addEventListener('click', generaPDFUnificato);
-    }
-    if (avvisoOkBtn) {
-        avvisoOkBtn.addEventListener('click', function() {
-            if (avvisoDocumenti) {
-                avvisoDocumenti.style.display = 'none';
             }
         });
     }

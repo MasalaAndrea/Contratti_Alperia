@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contratto Alperia - Inizio</title>
     <link rel="stylesheet" href="style.css">
-        <!-- Icone e manifest PWA -->
+    <!-- Icone e manifest PWA -->
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -24,20 +24,30 @@
         Scegli il tipo di contratto e le opzioni, poi procedi.</p>
         <div class="main-card">
             <form id="startForm">
-                <!-- Tipo di contratto -->
+                <!-- INIZIO BLOCCO CONTRATTO FLEX INVERTITO -->
                 <section class="section-contratto">
-                    <h2>Tipo di contratto</h2>
-                    <div class="vertical-radio-group">
-                        <label class="checkbox-inline">
-                            <input type="radio" name="tipo_contratto" id="contratto_residenziale" value="residenziale" checked>
-                            Residenziale
-                        </label>
-                        <label class="checkbox-inline">
-                            <input type="radio" name="tipo_contratto" id="contratto_business" value="business">
-                            Business
-                        </label>
+                  <div class="contratto-flex">
+                    <div class="contratto-agente">
+                      <label for="agente">Agente:</label>
+                      <input type="text" id="agente" name="agente" placeholder="Nome agente">
                     </div>
+                    <div class="contratto-radio-group">
+                      <span class="contratto-titolo">Tipo di contratto</span>
+                      <div class="contratto-radio-opzioni">
+                        <label>
+                          <input type="radio" name="tipo_contratto" id="contratto_residenziale" value="residenziale" checked>
+                          Residenziale
+                        </label>
+                        <label>
+                          <input type="radio" name="tipo_contratto" id="contratto_business" value="business">
+                          Business
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </section>
+                <!-- FINE BLOCCO CONTRATTO FLEX INVERTITO -->
+
                 <!-- Opzioni contratto -->
                 <section class="section-opzioni">
                     <h2>
@@ -283,6 +293,11 @@
         const mailCollaboratore = document.getElementById('mail_collaboratore').value.trim();
         const mailCliente = document.getElementById('mail_cliente').value.trim();
         const selectedOptions = JSON.parse(localStorage.getItem('selected_opzioni_contratto') || '[]');
+
+        // AGENTE
+        const agente = document.getElementById('agente').value.trim();
+        localStorage.setItem('agente', agente);
+        console.log("AGENTE SALVATO IN LOCALSTORAGE:", agente);
 
         localStorage.setItem('tipo_contratto', tipoContratto);
         localStorage.setItem('mail_collaboratore', mailCollaboratore);

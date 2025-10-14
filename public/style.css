@@ -606,26 +606,46 @@ input[type="email"]:focus {
     justify-content: space-between;
     margin-top: 18px;
 }
-
 .navigation-buttons button {
     background: #1c3664;
     color: #fff;
     border-radius: 7px;
     font-size: 1.05em;
-    padding: 10px 28px;
+    flex: 1 1 0;
+    padding: 10px 0;
     border: none;
     cursor: pointer;
     transition: background 0.2s;
+    min-width: 0;
+    max-width: 100%;
+    text-align: center;
+    margin: 0;
 }
-
 .navigation-buttons button:hover {
     background: #174d90;
 }
-
-.navigation-buttons button:active,
-.navigation-buttons button:focus {
-    background: #274678;
-    outline: none;
+.navigation-buttons .home-btn-navi {
+    background: #1976d2;
+}
+.navigation-buttons .home-btn-navi:hover {
+    background: #125198;
+}
+@media (max-width: 600px) {
+    .navigation-buttons {
+        flex-direction: column;
+        gap: 14px;
+    }
+    @media (max-width: 600px) {
+  .navigation-buttons {
+    flex-direction: column-reverse;
+    gap: 14px;
+  }
+}
+    .navigation-buttons button {
+        width: 100%;
+        font-size: 1em;
+        padding: 12px 0;
+    }
 }
 /* Allinea verticalmente check/radio e testo */
 .checkbox-inline,
@@ -656,7 +676,6 @@ input[type="email"]:focus {
 @media (max-width:700px) {
     .card-energia, .card-gas { padding: 15px 5vw; }
 }
-/* Allineamento input a sx e testo a dx */
 .checkbox-group label,
 .radio-group label,
 .dichiarazioni-group label {
@@ -685,7 +704,6 @@ input[type="email"]:focus {
     border: 1px solid #b0c6e2;
     vertical-align: middle;
 }
-/* Card colorate e centrali */
 .card-centrale {
     max-width: 540px;
     width: 96vw;
@@ -895,4 +913,122 @@ input[type="email"]:focus {
     font-size: 1.15em;
     color: #1a76d2;
     vertical-align: middle;
+}
+.firma-canvas {
+    display: block;
+    width: 100%;                 /* Si adatta al contenitore/card */
+    aspect-ratio: 3/1;           /* Forma larga e bassa, ideale per la firma */
+    max-width: 600px;            /* Limite su desktop */
+    min-width: 170px;
+    min-height: 60px;
+    max-height: 200px;
+    background: #ffffff;
+    border: 3px solid #ff0000;
+    border-radius: 0;
+    margin: 0 auto 8px auto;
+    box-sizing: border-box;
+    touch-action: none;
+}
+@media (max-width: 700px) {
+    .firma-canvas {
+        min-height: 180px;   /* esempio: ora è più alto! */
+        max-height: 240px;
+        aspect-ratio: 3/1;   /* oppure lascia come preferisci */
+    }
+}
+/* === BLOCCO RESPONSIVE E CENTRATO PER AGENTE E TIPO CONTRATTO === */
+.contratto-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.contratto-agente {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.contratto-radio-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* CENTRA anche su desktop */
+  width: 100%;
+}
+.contratto-titolo {
+  font-weight: bold;
+  font-size: 1.55em;
+  margin-bottom: 18px; /* Più spazio sotto il titolo */
+  text-align: center;
+}
+.contratto-radio-opzioni {
+  display: flex;
+  gap: 38px; /* Più spazio tra Residenziale e Business */
+  justify-content: center;
+}
+.contratto-radio-opzioni label {
+  font-size: 1.18em;
+}
+
+/* SOLO SU MOBILE: tutto in colonna e centrato */
+@media (max-width: 600px) {
+  .contratto-flex {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .contratto-agente {
+    justify-content: center;
+  }
+  .contratto-radio-group {
+    align-items: center;
+  }
+  .contratto-radio-opzioni {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+}
+
+/* === FINE BLOCCO RESPONSIVE E CENTRATO === */
+/* Allineamento perfetto per la checkbox "Allega Condizioni Generali" */
+.checkbox-allega {
+    display: flex;
+    align-items: center;
+    gap: 8px;                /* Spazio tra checkbox e testo */
+    font-size: 1.13em;
+    font-weight: 500;
+    color: #115890;          /* Colore blu come da esempio */
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+}
+
+.checkbox-allega input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #115890;
+    margin: 0 0 0 0;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.checkbox-allega span {
+    color: #115890;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 0;
+}
+
+/* Responsive: mantiene allineamento anche su mobile */
+@media (max-width: 600px) {
+    .checkbox-allega {
+        font-size: 1em;
+        gap: 9px;
+    }
+    .checkbox-allega input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+    }
 }

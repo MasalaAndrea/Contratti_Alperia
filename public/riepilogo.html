@@ -65,6 +65,7 @@
 
         <!-- CARD DATI CLIENTE -->
         <div id="riepilogo-card-cliente" class="card-dati-cliente card-centrale">
+            <div id="riepilogo-agente"></div>
             <!-- I dati cliente vengono popolati da JS -->
         </div>
         <!-- CARD DATI TECNICI -->
@@ -77,9 +78,17 @@
         </div>
 
         <div class="form-group" style="margin-top:32px;">
-            <label for="nome_file_pdf">Nome del file PDF:</label>
-            <input type="text" id="nome_file_pdf" placeholder="Nome del file PDF">
-        </div>
+    <label for="nome_file_pdf">Nome del file PDF:</label>
+    <input type="text" id="Condizioni_Generali_Retail.pdf" placeholder="Condizioni_Generali_Retail.pdf">
+</div>
+
+<!-- AGGIUNTA CHECKBOX CONDIZIONI GENERALI -->
+<div class="form-group">
+  <label class="checkbox-allega">
+    <input type="checkbox" id="allega-condizioni-generali">
+    <span>Allega Condizioni Generali</span>
+  </label>
+</div>
 
         <button id="genera-pdf-btn" class="main-btn">Genera Contratto</button>
         <button id="condividi-pdf-btn" class="main-btn" style="display:none; margin-top:12px;">Condividi PDF</button>
@@ -124,7 +133,7 @@
             <hr style="margin:18px 0 12px 0;">
             <div class="contatti-version">
                 <span class="contatti-ver-ico">&#128187;</span>
-                <span>Ver 0.0.1</span>
+                <span>Ver 2.0.0</span>
             </div>
         </div>
     </div>

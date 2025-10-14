@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test PDF-Lib campo Agente</title>
+</head>
+<body>
+  <button onclick="runTest()">Genera PDF di Test</button>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+  <script>
+    function runTest() {
+      const { PDFDocument } = window.PDFLib;
+      const url = "public/test.pdf";
+      fetch(url)
+        .then(res => res.arrayBuffer())
+        .then(async (bytes) => {
+          const pdfDoc = await PDFDocument.load(bytes);
+          const form = pdfDoc.getForm();
+          form.getTextField("Agente").setText("COPILOT TEST");
+          // Debug: stampa tutti i campi testo e il loro valore
+          form.getFields().forEach(f => {
+            if (f.constructor.name === "PDFTextField") {
+              console.log('Campo:', f.getName(), '=>', f.getText());
+            }
+          });
+          const newBytes = await pdfDoc.save();
+          const blob = new Blob([newBytes], { type: "application/pdf" });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "test_output.pdf";
+          link.click();
+        });
+    }
+  </script>
+</body>
+</html>

@@ -1,3 +1,7 @@
+// Blocca doppio click/invio in modo sicuro tramite funzione anonima isolata
+(function () {
+    let pdfInviatoBusiness = false;
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Uppercase conversion for text fields
     document.querySelectorAll('input[type="text"], input[type="email"], input[type="number"], textarea').forEach(input => {
@@ -5,7 +9,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             this.value = this.value.toUpperCase();
         });
     });
-
+    document.addEventListener('DOMContentLoaded', function() {
+    const agente = localStorage.getItem('agente') || sessionStorage.getItem('agente') || '';
+    const divAgente = document.getElementById('riepilogo-agente');
+    if (divAgente) {
+        divAgente.textContent = "Agente: " + agente;
+    }
+});
     const riepilogoContainer = document.getElementById('riepilogo-dati-business');
     const aziendaData = JSON.parse(sessionStorage.getItem('aziendaData')) || {};
     const technicalData = JSON.parse(sessionStorage.getItem('technicalData')) || {};
@@ -107,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // GAS
         if (technicalData.richiesta_gas && technicalData.dati_gas) {
             const nomeOffertaGas = getNomeOffertaBusiness(technicalData.dati_gas.codice_offerta, "gas", offerteBusiness);
-             const officialOptionsGas = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
+            const officialOptionsGas = ['switch', 'subentro', 'voltura', 'nuova_attivazione'];
             let tipoRichiestaGas = technicalData.dati_gas.tipo_richiesta || '';
             if (!officialOptionsGas.includes(tipoRichiestaGas)) {
                 tipoRichiestaGas = "Nessuna selezione";
@@ -214,9 +224,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ----------- PDF BUSINESS UNIFICATO COME IL RESIDENZIALE -----------
     async function generaPDFBusinessUnificato() {
+        if (pdfInviatoBusiness) return;  // Blocca doppio click/invio
+        pdfInviatoBusiness = true;
+
         if (typeof window.PDFLib === 'undefined') {
             alert('La libreria PDF-Lib non è caricata!');
             console.error('PDFLib non disponibile!');
+            pdfInviatoBusiness = false;
             return;
         }
         const { PDFDocument } = window.PDFLib;
@@ -232,8 +246,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const contrattoDoc = await PDFDocument.load(contrattoPdfBytes);
             const formContratto = contrattoDoc.getForm();
 
-            // [Qui compila tutti i campi come nel tuo codice...]
-
             // --- Compilazione campi contratto business ---
             formContratto.getTextField('Ragione_sociale').setText(aziendaData.ragione_sociale || '');
             formContratto.getTextField('partita_iva').setText(aziendaData.partita_iva || '');
@@ -247,6 +259,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             formContratto.getTextField('Email').setText(aziendaData.email_azienda || '');
             formContratto.getTextField('Pec').setText(aziendaData.pec || '');
             formContratto.getTextField('Cell').setText(aziendaData.cell || '');
+            formContratto.getTextField('Agente').setText(localStorage.getItem('agente') || '');
 
             // Dati rappresentante
             formContratto.getTextField('Cognome').setText(aziendaData.rapp_cognome || '');
@@ -308,7 +321,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                 }
             }
-            
+             if (technicalData.richiesta_elettrica) {
+                try { formContratto.getCheckBox('ENERGIA').check(); } catch (e) {}
+            }
+            if (technicalData.richiesta_gas) {
+                try { formContratto.getCheckBox('GAS').check(); } catch (e) {}
+            }
 
             // --- Compilazione pagamenti e consensi ---
             if (paymentData.autorizzazione_sdd) {
@@ -316,6 +334,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 formContratto.getTextField('Indirizzo_debitore').setText(paymentData.sdd_dati?.indirizzo_debitore || '');
                 formContratto.getTextField('Iban').setText(paymentData.sdd_dati?.iban || '');
                 formContratto.getTextField('Codice_fiscale_debitore').setText(paymentData.sdd_dati?.cf_debitore || '');
+                formContratto.getTextField('DATA_SDD').setText(formattaData(paymentData.data_firma) || '');
             }
             const gruppoRadioDichiarazione = formContratto.getRadioGroup('dichiarazione_notorieta');
             if (paymentData.dichiarazione_notorieta === 'Proprietario') {
@@ -361,8 +380,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const height = 25.51;
                 
                 firstPage.drawImage(signatureImage, {
-                    x: 390.8,
-                    y: 355.54,
+                    x: 365.8,
+                    y: 361.54,
                     width: width,
                     height: height,
                 });
@@ -370,7 +389,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (paymentData.autorizzazione_sdd) {
                     secondPage.drawImage(signatureImage, {
                         x: 390.57,
-                        y: 570.87,
+                        y: 575.87,
                         width: width,
                         height: height,
                     });
@@ -378,19 +397,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 secondPage.drawImage(signatureImage, {
                     x: 340.68,
-                    y: 335.15,
+                    y: 340.15,
                     width: width,
                     height: height,
                 });
                 secondPage.drawImage(signatureImage, {
-                    x: 334.33,
-                    y: 130.8,
+                    x: 342.33,
+                    y: 141.8,
                     width: width,
                     height: height,
                 });
                 secondPage.drawImage(signatureImage, {
                     x: 345.33,
-                    y: 72.92,
+                    y: 85.92,
                     width: width,
                     height: height,
                 });
@@ -466,13 +485,31 @@ document.addEventListener('DOMContentLoaded', async () => {
                 cteDocs.push(cteDocGas);
             }
 
-            // --- Unisci contratto + CTE energia + CTE gas ---
-            const finalPdfDoc = await PDFDocument.create();
+                       // --- Unisci contratto + CTE energia + CTE gas ---
+            const finalPdfDoc = await PDFLib.PDFDocument.create();
             const contrattoPages = await finalPdfDoc.copyPages(contrattoDoc, contrattoDoc.getPageIndices());
             contrattoPages.forEach(page => finalPdfDoc.addPage(page));
             for (const cteDoc of cteDocs) {
                 const ctePages = await finalPdfDoc.copyPages(cteDoc, cteDoc.getPageIndices());
                 ctePages.forEach(page => finalPdfDoc.addPage(page));
+            }
+
+            // --- AGGIUNTA: ALLEGA CONDIZIONI GENERALI SE SPUNTATO ---
+            const allegaCondizioni = document.getElementById('allega-condizioni-generali');
+            if (allegaCondizioni && allegaCondizioni.checked) {
+                try {
+                    const condizioniResp = await fetch('/Condizioni_Generali_Business.pdf');
+                    if (condizioniResp.ok) {
+                        const condizioniBytes = await condizioniResp.arrayBuffer();
+                        const condizioniDoc = await PDFLib.PDFDocument.load(condizioniBytes);
+                        const condizioniPages = await finalPdfDoc.copyPages(condizioniDoc, condizioniDoc.getPageIndices());
+                        condizioniPages.forEach(page => finalPdfDoc.addPage(page));
+                    } else {
+                        alert("Attenzione: impossibile allegare le Condizioni Generali (file non trovato)");
+                    }
+                } catch (err) {
+                    alert("Errore nell'allegare le Condizioni Generali: " + err.message);
+                }
             }
 
             // Download PDF unico
@@ -511,6 +548,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error('Errore PDF business:', error);
             alert('Errore nella generazione PDF business!');
+        } finally {
+            setTimeout(() => { pdfInviatoBusiness = false; }, 2000); // Sblocca dopo 2 secondi
         }
     }
 
@@ -561,3 +600,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (avvisoDocumenti) avvisoDocumenti.style.display = 'none';
     });
 });
+})(); // Fine funzione auto-invocata

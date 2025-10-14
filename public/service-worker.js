@@ -9,7 +9,7 @@ const urlsToCache = [
   "/pagina2_business.html",
   "/pagina3_business.html",
   "/pagina4_business.html",
-  "/riepilogo_business.js",
+  "/script_business.js",
   "/firma.js",
   "/riepilogo.js",
   "/script.js",
@@ -17,16 +17,22 @@ const urlsToCache = [
   "/style.css",
   "/manifest.json",
   "/web-app-manifest-192x192.png",
-  "/web-app-manifest-512x512.png",
-  // Aggiungi qui TUTTI i file JS/CSS/HTML/PDF che vuoi disponibili offline!
-  // Anche le librerie CDN, se vuoi
-  "https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"
+  "/web-app-manifest-512x512.png"
+  // NON mettere qui url esterni come CDN!
 ];
 
+// DEBUG: Mostra quale file fallisce la cache!
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME).then(async cache => {
+      for (const url of urlsToCache) {
+        try {
+          await cache.add(url);
+        } catch (e) {
+          console.error("Errore cache file:", url, e);
+        }
+      }
+    })
   );
 });
 

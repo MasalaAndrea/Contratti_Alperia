@@ -4,48 +4,76 @@
     "Categoria": "Energia",
     "Nome Offerta": "Alperia Smile Safety",
     "Codice": "000368ESFML02XX2114513X250911XVE",
-    "PDF_CTE": "CTE_AlperiaSmileSafetyITA.pdf"
+    "PDF_CTE": "CTE_Alperia Smile Safety_ITA_.pdf"
   },
   {
     "Tipo": "residenziale",
     "Categoria": "Energia",
     "Nome Offerta": "Alperia Smile Clear",
     "Codice": "000368ESFML06XX1534159X250911XVE",
-    "PDF_CTE": "CTE_AlperiaSmileClearITA.pdf"
+    "PDF_CTE": "CTE_Alperia Smile Clear_ITA_.pdf"
   },
   {
     "Tipo": "residenziale",
     "Categoria": "Energia",
     "Nome Offerta": "Alperia Smile Pure",
     "Codice": "000368ESFML06XX1514158X250911XVE",
-    "PDF_CTE": "CTE_AlperiaSmilePureITA.pdf"
+    "PDF_CTE": "CTE_Alperia Smile Pure_ITA_.pdf"
   },
   {
     "Tipo": "residenziale",
     "Categoria": "Energia",
     "Nome Offerta": "Alperia Smile Standard",
     "Codice": "000368ESFML06XX1524157X250911XVE",
-    "PDF_CTE": "CTE_AlperiaSmileStandardITA.pdf"
+    "PDF_CTE": "CTE_Alperia Smile Standard_ITA_.pdf"
   },
   {
     "Tipo": "residenziale",
     "Categoria": "Energia",
     "Nome Offerta": "Alperia Direct Energy",
     "Codice": "000368ETVML02XX217DIRECTX2509XVE",
-    "PDF_CTE": "CTE_AlperiaDirectEnergyITA.pdf"
+    "PDF_CTE": "CTE_Alperia Direct Energy_ITA_.pdf"
+  },
+  {
+    "Tipo": "residenziale",
+    "Categoria": "Energia",
+    "Nome Offerta": "Alperia Smile Start",
+    "Codice": "000368ESFML06XX1504156X251011XVE",
+    "PDF_CTE": "CTE_Alperia Smile Start_ITA_.pdf"
+  },
+  {
+    "Tipo": "residenziale",
+    "Categoria": "Energia",
+    "Nome Offerta": "Alperia TerzoTempo",
+    "Codice": "000368ESVOL01XXXXXX121X250811XVE",
+    "PDF_CTE": "CTE_Alperia TerzoTempo_ITA_.pdf"
   },
   {
     "Tipo": "residenziale",
     "Categoria": "Gas",
     "Nome Offerta": "Alperia Gas Smile Clear",
     "Codice": "000368GSFML06XX1934221X250911XVE",
-    "PDF_CTE": "CTE_AlperiaGasSmileClearITA.pdf"
+    "PDF_CTE": "CTE_Alperia Gas Smile Clear_ITA_NORI.pdf"
   },
   {
     "Tipo": "residenziale",
     "Categoria": "Gas",
     "Nome Offerta": "Alperia Gas Smile Pure",
     "Codice": "000368GSFML07XX1744192X250911XVE",
-    "PDF_CTE": "CTE_AlperiaGasSmilePureITA.pdf"
+    "PDF_CTE": "CTE_Alperia Gas Smile Pure_ITA_NORI.pdf"
+  },
+  {
+    "Tipo": "residenziale",
+    "Categoria": "Gas",
+    "Nome Offerta": "Alperia Gas Home Standard",
+    "Codice": "000368GSVML01XX1234123X250411XVE",
+    "PDF_CTE": "CTE_Alperia Gas Home Standard_ITA_NORI.pdf"
+  },
+  {
+    "Tipo": "residenziale",
+    "Categoria": "Gas",
+    "Nome Offerta": "Alperia Gas Home Start",
+    "Codice": "000368GSVML01XX1244124X250411XVE",
+    "PDF_CTE": "CTE_Alperia Gas Home Start_ITA_NORI.pdf"
   }
 ]

@@ -34,17 +34,12 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         document.body.appendChild(overlay);
     }
 
-    function resizeCanvas() {
-        // NON salvare la firma qui: Chrome potrebbe aver già azzerato il canvas!
-        // Ridimensiona il canvas
+    function restoreSignature() {
+        // Se la variabile non contiene la firma, prova su localStorage
+        if (!firmaDataUrl) {
+            firmaDataUrl = localStorage.getItem(canvasId + "_firma") || null;
+        }
         const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.scale(dpr, dpr);
-
-        // Ripristina la firma, se c'è
         if (firmaDataUrl) {
             const img = new window.Image();
             img.onload = function() {
@@ -54,8 +49,23 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         }
     }
 
+    function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+
+        // Ripristina la firma dopo resize/orientamento
+        restoreSignature();
+    }
+
     window.addEventListener('resize', resizeCanvas);
     window.addEventListener('orientationchange', resizeCanvas);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', resizeCanvas);
+    }
 
     // Inizializza canvas
     resizeCanvas();
@@ -101,6 +111,7 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         isDrawing = false;
         // Salva la firma dopo ogni tratto, così è pronta per essere ripristinata dopo la rotazione
         firmaDataUrl = canvas.toDataURL();
+        localStorage.setItem(canvasId + "_firma", firmaDataUrl);
 
         if (overlay) overlay.style.display = 'none';
         canvas.style.zIndex = '';
@@ -110,6 +121,7 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
     function clearCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         firmaDataUrl = null;
+        localStorage.removeItem(canvasId + "_firma");
     }
 
     // Pointer Events (mouse, touch, pen)

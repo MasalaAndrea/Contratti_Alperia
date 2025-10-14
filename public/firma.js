@@ -1,4 +1,4 @@
-// Funzione di init firma su un canvas con clear button + overlay blocco esterno
+// Firma.js - versione robusta per Chrome PWA e Edge
 function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) {
@@ -14,7 +14,7 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
     let lastX = 0;
     let lastY = 0;
 
-    // Crea overlay una sola volta
+    // Overlay blocco eventi esterni
     let overlay = document.getElementById('firma-overlay');
     if (!overlay) {
         overlay = document.createElement('div');
@@ -34,8 +34,9 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         document.body.appendChild(overlay);
     }
 
+    // Funzione di ripristino firma dal localStorage
     function restoreSignature() {
-        // Se la variabile non contiene la firma, prova su localStorage
+        // Prova prima dalla variabile, poi da localStorage
         if (!firmaDataUrl) {
             firmaDataUrl = localStorage.getItem(canvasId + "_firma") || null;
         }
@@ -43,6 +44,7 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         if (firmaDataUrl) {
             const img = new window.Image();
             img.onload = function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
             };
             img.src = firmaDataUrl;
@@ -56,18 +58,21 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
         canvas.height = rect.height * dpr;
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr, dpr);
-
-        // Ripristina la firma dopo resize/orientamento
         restoreSignature();
     }
 
+    // Eventi che potrebbero causare perdita canvas
     window.addEventListener('resize', resizeCanvas);
     window.addEventListener('orientationchange', resizeCanvas);
     if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', resizeCanvas);
     }
+    window.addEventListener('pageshow', restoreSignature);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) restoreSignature();
+    });
 
-    // Inizializza canvas
+    // Inizializza canvas e ripristina all'avvio
     resizeCanvas();
 
     ctx.strokeStyle = '#000000';
@@ -99,8 +104,6 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
     function handleStart(e) {
         isDrawing = true;
         [lastX, lastY] = getRelativePosition(e);
-
-        // Overlay sopra tutto
         if (overlay) overlay.style.display = 'block';
         canvas.style.position = 'relative';
         canvas.style.zIndex = 10001;
@@ -109,10 +112,9 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
 
     function handleEnd(e) {
         isDrawing = false;
-        // Salva la firma dopo ogni tratto, così è pronta per essere ripristinata dopo la rotazione
+        // Salva la firma dopo ogni tratto
         firmaDataUrl = canvas.toDataURL();
         localStorage.setItem(canvasId + "_firma", firmaDataUrl);
-
         if (overlay) overlay.style.display = 'none';
         canvas.style.zIndex = '';
         e && e.preventDefault && e.preventDefault();
@@ -141,11 +143,8 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
 }
 window.initFirmaPad = initFirmaPad;
 
+// Ripristina sempre la firma all'avvio pagina
 document.addEventListener('DOMContentLoaded', () => {
-    // Inizializza la firma principale con spessore 7 (puoi cambiare a piacere)
     initFirmaPad('firma-pad', 'clear-firma', 7);
-
-    // La firma SDD sarà inizializzata dinamicamente dal codice della pagina (come già avviene),
-    // ma ora puoi passarle anche lo spessore desiderato (es: 5 o quello che preferisci):
-    // Esempio: window.initFirmaPad('firma-debitore-sdd-pad', 'clear-firma-debitore-sdd', 7);
+    // Se vuoi altre istanze: initFirmaPad('altra-id', 'altro-clear-btn', spessore);
 });

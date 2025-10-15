@@ -1,4 +1,4 @@
-// Firma.js - versione robusta per Chrome PWA e Edge
+// Firma.js - versione robusta per Chrome PWA e Edge con avviso per versioni bug
 function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) {
@@ -36,7 +36,6 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
 
     // Funzione di ripristino firma dal localStorage
     function restoreSignature() {
-        // Prova prima dalla variabile, poi da localStorage
         if (!firmaDataUrl) {
             firmaDataUrl = localStorage.getItem(canvasId + "_firma") || null;
         }
@@ -62,10 +61,10 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
     }
 
     // Eventi che potrebbero causare perdita canvas
-    window.addEventListener('resize', resizeCanvas);
-    window.addEventListener('orientationchange', resizeCanvas);
+    window.addEventListener('resize', () => { resizeCanvas(); maybeWarnChromeBug(); });
+    window.addEventListener('orientationchange', () => { resizeCanvas(); maybeWarnChromeBug(); });
     if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', resizeCanvas);
+        window.visualViewport.addEventListener('resize', () => { resizeCanvas(); maybeWarnChromeBug(); });
     }
     window.addEventListener('pageshow', restoreSignature);
     document.addEventListener('visibilitychange', () => {
@@ -143,8 +142,24 @@ function initFirmaPad(canvasId, clearButtonId, lineWidth = 5) {
 }
 window.initFirmaPad = initFirmaPad;
 
+// Avviso per bug Chrome specifico
+function getChromeVersion() {
+    const match = navigator.userAgent.match(/Chrome\/(\d+\.\d+\.\d+\.\d+)/);
+    return match ? match[1] : null;
+}
+const chromeBugVersions = [
+    "141.0.7390.70"
+];
+function maybeWarnChromeBug() {
+    const ver = getChromeVersion();
+    if (ver && chromeBugVersions.includes(ver)) {
+        alert("ATTENZIONE: La versione di Chrome che stai usando su questo dispositivo può perdere la firma se ruoti lo schermo o cambi orientamento. Ti consigliamo di salvare la firma o aggiornare il browser.");
+    }
+}
+
 // Ripristina sempre la firma all'avvio pagina
 document.addEventListener('DOMContentLoaded', () => {
     initFirmaPad('firma-pad', 'clear-firma', 7);
     // Se vuoi altre istanze: initFirmaPad('altra-id', 'altro-clear-btn', spessore);
+
 });

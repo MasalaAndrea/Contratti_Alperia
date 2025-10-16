@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generatore PDF Alperia - Dati Cliente</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+    .autocomplete-suggestions {
+      border: 1px solid #999; max-height: 170px; overflow-y: auto;
+      background: #fffbcc;
+      position: absolute; z-index: 99; width: 100%;
+    }
+    .autocomplete-suggestion {
+      padding: 6px 10px; cursor: pointer;
+    }
+    .autocomplete-suggestion:hover {
+      background: #e2e2ff;
+    }
+    .autocomplete-group { position: relative; }
+    </style>
 </head>
 <body class="residenziale">
     <header class="main-header">
@@ -50,9 +64,10 @@
                     </div>
                 </div>
                 <div class="form-group-doppio">
-                    <div class="form-group">
+                    <div class="form-group autocomplete-group">
                         <label for="comune_residenza">Comune:*</label>
-                        <input type="text" id="comune_residenza" name="comune_residenza" required>
+                        <input type="text" id="comune_residenza" name="comune_residenza" required autocomplete="off">
+                        <div id="suggestions_residenza" class="autocomplete-suggestions" style="display:none"></div>
                     </div>
                     <div class="form-group">
                         <label for="provincia_residenza">Provincia:*</label>
@@ -104,13 +119,16 @@
                             <input type="text" id="cap_fornitura" name="cap_fornitura" class="fornitura-obbligatoria" required maxlength="5" minlength="5">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="comune_fornitura">Comune:*</label>
-                        <input type="text" id="comune_fornitura" name="comune_fornitura" class="fornitura-obbligatoria">
-                    </div>
-                    <div class="form-group">
-                        <label for="provincia_fornitura">Provincia:*</label>
-                        <input type="text" id="provincia_fornitura" name="provincia_fornitura" class="fornitura-obbligatoria" required maxlength="2" minlength="2">
+                    <div class="form-group-doppio">
+                        <div class="form-group autocomplete-group">
+                            <label for="comune_fornitura">Comune:*</label>
+                            <input type="text" id="comune_fornitura" name="comune_fornitura" class="fornitura-obbligatoria" autocomplete="off">
+                            <div id="suggestions_fornitura" class="autocomplete-suggestions" style="display:none"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="provincia_fornitura">Provincia:*</label>
+                            <input type="text" id="provincia_fornitura" name="provincia_fornitura" class="fornitura-obbligatoria" required maxlength="2" minlength="2">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,5 +165,79 @@
         </div>
     </div>
 </div>
+<!-- AUTOCOMPLETE JS perfezionato + AUTO-COMPILAZIONE DA CAP -->
+<script>
+const comuniPromise = fetch('data/comuni.json').then(r => r.json());
+
+function setupComuneAutocomplete(inputComuneId, inputCapId, inputProvinciaId, suggestionBoxId) {
+    let inputComune = document.getElementById(inputComuneId);
+    let inputCap = document.getElementById(inputCapId);
+    let inputProvincia = document.getElementById(inputProvinciaId);
+    let suggestions = document.getElementById(suggestionBoxId);
+
+    inputComune.addEventListener('input', function() {
+        const val = this.value.trim().toLowerCase();
+        suggestions.innerHTML = '';
+        comuniPromise.then(function(comuni) {
+            if (!val || !comuni || comuni.length === 0) {
+                suggestions.style.display = 'none';
+                return;
+            }
+            // PRIMA quelli che iniziano con la stringa digitata, POI quelli che la contengono
+            let startsWith = comuni.filter(c => c.nome.toLowerCase().startsWith(val));
+            let contains = comuni.filter(c => !c.nome.toLowerCase().startsWith(val) && c.nome.toLowerCase().includes(val));
+            let filtered = startsWith.concat(contains).slice(0, 20);
+            if (filtered.length === 0) {
+                suggestions.style.display = 'none';
+                return;
+            }
+            filtered.forEach(c => {
+                let capText = (c.cap && c.cap.length > 1) ? ' [' + c.cap.join(', ') + ']' : (c.cap && c.cap.length === 1 ? ' [' + c.cap[0] + ']' : '');
+                let div = document.createElement('div');
+                div.className = 'autocomplete-suggestion';
+                div.textContent = c.nome + ' (' + c.sigla + ')' + capText;
+                div.onclick = () => {
+                    inputComune.value = c.nome;
+                    if (inputCap) inputCap.value = (c.cap && c.cap.length > 0) ? c.cap[0] : '';
+                    if (inputProvincia) inputProvincia.value = c.sigla;
+                    suggestions.style.display = 'none';
+                };
+                suggestions.appendChild(div);
+            });
+            suggestions.style.display = 'block';
+        });
+    });
+
+    document.addEventListener('click', function(e) {
+        if (e.target !== inputComune) {
+            suggestions.style.display = 'none';
+        }
+    });
+
+    // AUTO-COMPILAZIONE DA CAP
+    if (inputCap) {
+        inputCap.addEventListener('input', function() {
+            const val = this.value.trim();
+            if (val.length === 5) {
+                comuniPromise.then(comuni => {
+                    let matchingComuni = comuni.filter(c => c.cap && c.cap.includes(val));
+                    if (matchingComuni.length === 1) {
+                        inputComune.value = matchingComuni[0].nome;
+                        if (inputProvincia) inputProvincia.value = matchingComuni[0].sigla;
+                    } else if (matchingComuni.length > 1) {
+                        // Se più comuni trovati con lo stesso CAP, scegli il primo (opzionale: mostra una select)
+                        inputComune.value = matchingComuni[0].nome;
+                        if (inputProvincia) inputProvincia.value = matchingComuni[0].sigla;
+                    }
+                });
+            }
+        });
+    }
+}
+
+// Attiva autocomplete e auto-compilazione CAP su entrambi i gruppi
+setupComuneAutocomplete('comune_residenza', 'cap_residenza', 'provincia_residenza', 'suggestions_residenza');
+setupComuneAutocomplete('comune_fornitura', 'cap_fornitura', 'provincia_fornitura', 'suggestions_fornitura');
+</script>
 </body>
 </html>

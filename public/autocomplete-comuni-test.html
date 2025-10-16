@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Autocomplete Comune Test</title>
+  <style>
+    .autocomplete-suggestions { border: 1px solid #999; background: #fffbcc; position: absolute; width: 100%; z-index: 99; max-height: 150px; overflow-y: auto; }
+    .autocomplete-suggestion { cursor: pointer; padding: 5px; }
+    .autocomplete-suggestion:hover { background: #e2e2ff;}
+    .autocomplete-group { position: relative;}
+  </style>
+</head>
+<body>
+<div class="autocomplete-group" style="width:300px;">
+  <label for="comune">Comune:*</label>
+  <input type="text" id="comune" autocomplete="off" style="width:100%;">
+  <div id="suggestions" class="autocomplete-suggestions" style="display:none"></div>
+</div>
+<input type="text" id="cap" placeholder="CAP">
+<input type="text" id="provincia" placeholder="Provincia">
+<script>
+const comuniPromise = fetch('data/comuni.json').then(r => r.json());
+const inputComune = document.getElementById('comune');
+const inputCap = document.getElementById('cap');
+const inputProv = document.getElementById('provincia');
+const suggestions = document.getElementById('suggestions');
+
+inputComune.addEventListener('input', function() {
+  const val = this.value.trim().toLowerCase();
+  suggestions.innerHTML = '';
+  comuniPromise.then(comuni => {
+    if (!val || comuni.length === 0) { suggestions.style.display = 'none'; return; }
+    let filtered = comuni.filter(c => c.nome.toLowerCase().startsWith(val) || c.nome.toLowerCase().includes(val));
+    filtered = filtered.slice(0, 20);
+    if (filtered.length === 0) { suggestions.style.display = 'none'; return; }
+    filtered.forEach(c => {
+      let div = document.createElement('div');
+      div.className = 'autocomplete-suggestion';
+      div.textContent = c.nome + ' (' + c.sigla + ')';
+      div.onclick = () => {
+        inputComune.value = c.nome;
+        inputCap.value = (c.cap && c.cap.length > 0) ? c.cap[0] : '';
+        inputProv.value = c.sigla;
+        suggestions.style.display = 'none';
+      };
+      suggestions.appendChild(div);
+    });
+    suggestions.style.display = 'block';
+  });
+});
+document.addEventListener('click', function(e) {
+  if (e.target !== inputComune) suggestions.style.display = 'none';
+});
+</script>
+</body>
+</html>

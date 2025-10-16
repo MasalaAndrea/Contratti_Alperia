@@ -394,5 +394,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<!-- AUTOCOMPLETE CAP → COMUNE/PROVINCIA per pagina2_business.html -->
+<script>
+// Carica il database dei comuni una sola volta
+const comuniPromise = fetch('data/comuni.json').then(r => r.json());
+
+// Sede legale (Dati Azienda)
+const capSede = document.getElementById('cap_sede');
+if (capSede) {
+    capSede.addEventListener('input', function() {
+        const val = this.value.trim();
+        if (val.length === 5) {
+            comuniPromise.then(comuni => {
+                let matches = comuni.filter(c => c.cap && c.cap.includes(val));
+                if (matches.length === 1) {
+                    document.getElementById('comune_sede').value = matches[0].nome;
+                    document.getElementById('provincia_sede').value = matches[0].sigla;
+                } else if (matches.length > 1) {
+                    document.getElementById('comune_sede').value = matches[0].nome;
+                    document.getElementById('provincia_sede').value = matches[0].sigla;
+                }
+            });
+        }
+    });
+}
+
+// Sede di fornitura (diversa, se visibile)
+const capFornitura = document.getElementById('cap_fornitura');
+if (capFornitura) {
+    capFornitura.addEventListener('input', function() {
+        const val = this.value.trim();
+        if (val.length === 5) {
+            comuniPromise.then(comuni => {
+                let matches = comuni.filter(c => c.cap && c.cap.includes(val));
+                if (matches.length === 1) {
+                    document.getElementById('comune_fornitura').value = matches[0].nome;
+                    document.getElementById('provincia_fornitura').value = matches[0].sigla;
+                } else if (matches.length > 1) {
+                    document.getElementById('comune_fornitura').value = matches[0].nome;
+                    document.getElementById('provincia_fornitura').value = matches[0].sigla;
+                }
+            });
+        }
+    });
+}
+</script>
 </body>
 </html>

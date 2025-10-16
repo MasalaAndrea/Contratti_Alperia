@@ -214,24 +214,23 @@ function setupComuneAutocomplete(inputComuneId, inputCapId, inputProvinciaId, su
         }
     });
 
-    // AUTO-COMPILAZIONE DA CAP
+    // AUTO-COMPILAZIONE DA CAP: ascolta input, change e blur per compatibilità mobile!
     if (inputCap) {
-        inputCap.addEventListener('input', function() {
+        const aggiornaDaCap = function() {
             const val = this.value.trim();
             if (val.length === 5) {
                 comuniPromise.then(comuni => {
                     let matchingComuni = comuni.filter(c => c.cap && c.cap.includes(val));
-                    if (matchingComuni.length === 1) {
-                        inputComune.value = matchingComuni[0].nome;
-                        if (inputProvincia) inputProvincia.value = matchingComuni[0].sigla;
-                    } else if (matchingComuni.length > 1) {
-                        // Se più comuni trovati con lo stesso CAP, scegli il primo (opzionale: mostra una select)
+                    if (matchingComuni.length >= 1) {
                         inputComune.value = matchingComuni[0].nome;
                         if (inputProvincia) inputProvincia.value = matchingComuni[0].sigla;
                     }
                 });
             }
-        });
+        };
+        inputCap.addEventListener('input', aggiornaDaCap);
+        inputCap.addEventListener('change', aggiornaDaCap);
+        inputCap.addEventListener('blur', aggiornaDaCap);
     }
 }
 

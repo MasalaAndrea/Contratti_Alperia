@@ -8,4 +8,5 @@ node_modules/
 *.log
 
 # Ignora file temporanei
-tmp/
+tmp/*.backup
+*.backup

@@ -9,3 +9,4 @@ node_modules/
 
 # Ignora file temporanei
 tmp/*.backup
+*.backup
